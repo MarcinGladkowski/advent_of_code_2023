@@ -1,8 +1,15 @@
-with open('input_test.txt') as f:
-    data = [x.replace('\n', '') for x in f.readlines()]
+TEST_DATA = 'input_test.txt'
+DATA = 'input.txt'
+
+
+def load_data(file_name: str) -> list:
+    with open(file_name) as f:
+        return [x.replace('\n', '') for x in f.readlines()]
+
 
 codes = []
 
+test_data = load_data(TEST_DATA)
 
 def calculate_sum(data: list) -> int:
     result_sum = 0
@@ -20,4 +27,6 @@ def calculate_sum(data: list) -> int:
     return result_sum
 
 
-assert 142 == calculate_sum(data)
+assert 142 == calculate_sum(test_data)
+
+print(calculate_sum(load_data(DATA)))
