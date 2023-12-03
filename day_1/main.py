@@ -1,5 +1,5 @@
-TEST_DATA = 'input_test.txt'
-DATA = 'input.txt'
+TEST_DATA_1 = 'input_test_part_1.txt'
+DATA_1 = 'input_part_1.txt'
 
 
 def load_data(file_name: str) -> list:
@@ -9,14 +9,15 @@ def load_data(file_name: str) -> list:
 
 codes = []
 
-test_data = load_data(TEST_DATA)
+test_data = load_data(TEST_DATA_1)
+
 
 def calculate_sum(data: list) -> int:
     result_sum = 0
 
     for x in data:
-        numbers = [e for e in x if e.isnumeric()]
-        filtered = [n for idx, n in enumerate(numbers) if n.isnumeric() and idx == 0 or idx == len(numbers) - 1]
+        numbers = list(filter(lambda x: x.isnumeric(), x))
+        filtered = [n for idx, n in enumerate(numbers) if idx == 0 or idx == len(numbers) - 1]
 
         if len(filtered) == 2:
             result_sum += int(''.join(filtered))
@@ -29,4 +30,4 @@ def calculate_sum(data: list) -> int:
 
 assert 142 == calculate_sum(test_data)
 
-print(calculate_sum(load_data(DATA)))
+print(calculate_sum(load_data(DATA_1)))
