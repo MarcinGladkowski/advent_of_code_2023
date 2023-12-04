@@ -103,3 +103,6 @@ assert get_number_for_keywords_search({1: 'two', 3: 'four', 9: '9'}) == ['2', '4
 print(calculate_sum_with_keywords(load_data(TEST_DATA_2)))
 
 assert 281 == calculate_sum_with_keywords(load_data(TEST_DATA_2))
+
+
+print(calculate_sum_with_keywords(load_data(DATA_2)))
