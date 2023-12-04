@@ -1,18 +1,16 @@
+import re
+
 TEST_DATA_1 = 'input_test_part_1.txt'
 TEST_DATA_2 = 'input_test_part_2.txt'
 DATA_1 = 'input_part_1.txt'
 DATA_2 = 'input_part_2.txt'
 
-
 def load_data(file_name: str) -> list:
     with open(file_name) as f:
         return [x.replace('\n', '') for x in f.readlines()]
 
-
 codes = []
-
 test_data = load_data(TEST_DATA_1)
-
 
 def basic_filter(row) -> list:
     numbers = list(filter(lambda x: x.isnumeric(), row))
@@ -42,8 +40,8 @@ def calculate_sum(data: list, filter: callable) -> int:
     return result_sum
 
 
-# assert 142 == calculate_sum(test_data, basic_filter)
-# print(calculate_sum(load_data(DATA_1), basic_filter)) -> result day 1 - part 1
+assert 142 == calculate_sum(test_data, basic_filter)
+print(calculate_sum(load_data(DATA_1), basic_filter)) # -> result day 1 - part 1
 
 keywords = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', '1', '2', '3', '4', '5', '6', '7',
             '8', '9']
@@ -62,17 +60,40 @@ numbers_dictionary = {
 }
 
 
+def find_numeric_words(row: str, sub: str, start: int = 0):
+
+    find = row.find(sub, start)
+
+    if find == -1:
+        return find
+
+
 def parse_with_keywords(row: str) -> dict:
     parsed = {}
-    for k in keywords:
-        found = row.find(k)
+
+    start_index = 0
+    for numeric_word in numbers_dictionary.keys():
+        found = row.find(numeric_word, start_index)
         if found != -1:
-            parsed[found] = k
+            parsed[found] = numeric_word
+            start_index += len(numeric_word)
+        start_index += 1
+
+    for k in numbers_dictionary.values():
+        for idx, l in enumerate(row):
+            if k == l:
+                parsed[idx] = l
 
     return dict(sorted(parsed.items()))
 
 
+print(parse_with_keywords('m9qvkqlgfhtwo3seven4seven'))
+
 assert parse_with_keywords('ttfourtwo3') == {2: 'four', 6: 'two', 9: '3'}
+assert parse_with_keywords('m9qvkqlgfhtwo3seven4seven') == {2: '9', 10: 'two', 13: '3', 14: 'seven', 19: '4',
+                                                            20: 'seven'}
+
+exit(0)
 
 
 def get_number_for_keywords_search(row_result: dict) -> list:
@@ -104,5 +125,26 @@ print(calculate_sum_with_keywords(load_data(TEST_DATA_2)))
 
 assert 281 == calculate_sum_with_keywords(load_data(TEST_DATA_2))
 
-
 print(calculate_sum_with_keywords(load_data(DATA_2)))
+
+
+def test_recognize_data(data: list):
+    """
+    Test function
+    :param data:
+    :return:
+    """
+
+    recognized = list(map(lambda x: parse_with_keywords(x), data))
+
+    parsed = list(map(lambda row: get_number_for_keywords_search(row), recognized))
+
+    for parse in parsed:
+        print(parse)
+
+    with open('decoded.txt', 'w') as f:
+        for row in parsed:
+            f.write(','.join(map(str, row)) + '\n')
+
+
+test_recognize_data(load_data(DATA_2))
