@@ -80,7 +80,6 @@ def get_number_for_keywords_search(row_result: dict) -> list:
         map(lambda x: numbers_dictionary.get(x) if x in list(numbers_dictionary.keys()) else x, row_result.values()))
 
 
-
 def calculate_sum_with_keywords(data: list) -> int:
     result_sum = 0
 
@@ -101,8 +100,6 @@ def calculate_sum_with_keywords(data: list) -> int:
 
 assert get_number_for_keywords_search({1: 'two', 3: 'four', 9: '9'}) == ['2', '4', '9']
 
-
-
 print(calculate_sum_with_keywords(load_data(TEST_DATA_2)))
 
-#assert 281 == calculate_sum(load_data(TEST_DATA_2), keywords_filter)
+assert 281 == calculate_sum_with_keywords(load_data(TEST_DATA_2))
