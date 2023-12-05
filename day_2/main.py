@@ -3,7 +3,7 @@ import re
 from enum import Enum
 
 TEST_DATA_1 = 'input_test.txt'
-
+TEST_DATA = 'input.txt'
 
 def load_data(file_name: str) -> list:
     with open(file_name) as f:
@@ -11,7 +11,7 @@ def load_data(file_name: str) -> list:
 
 
 test_data = load_data(TEST_DATA_1)
-
+data_part_1 = load_data(TEST_DATA)
 
 class Color(Enum):
     RED = 'red'
@@ -134,18 +134,23 @@ assert reveal_set.is_possible(set_possible_1)
 assert reveal_set.is_possible(set_impossible_1) == False
 
 
-games = []
-for plain_game in test_data:
-    title, cubes = plain_game.split(':')
-    game = Game(int(get_game_id(title)), [])
 
-    for set in get_sets(cubes):
-        new_set = Set([])
-        for cube in set.split(','):
-            new_set.add(Cube.from_plain(cube))
-        game.sets.append(new_set)
 
-    games.append(game)
+def build_game(test_data: list):
+    games = []
+    for plain_game in test_data:
+        title, cubes = plain_game.split(':')
+        game = Game(int(get_game_id(title)), [])
+
+        for set in get_sets(cubes):
+            new_set = Set([])
+            for cube in set.split(','):
+                new_set.add(Cube.from_plain(cube))
+            game.sets.append(new_set)
+
+        games.append(game)
+
+    return games
 
 
 def count_possible_games(games: list) -> int:
@@ -158,6 +163,10 @@ def count_possible_games(games: list) -> int:
     return result
 
 
-result = count_possible_games(games)
+result = count_possible_games(build_game(test_data))
 
 print(result)
+
+result_data = count_possible_games(build_game(data_part_1))
+
+print(result_data)
