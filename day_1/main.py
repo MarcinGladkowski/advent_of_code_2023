@@ -41,7 +41,6 @@ def calculate_sum(data: list, filter: callable) -> int:
 
 
 assert 142 == calculate_sum(test_data, basic_filter)
-print(calculate_sum(load_data(DATA_1), basic_filter)) # -> result day 1 - part 1
 
 keywords = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', '1', '2', '3', '4', '5', '6', '7',
             '8', '9']
@@ -60,24 +59,37 @@ numbers_dictionary = {
 }
 
 
-def find_numeric_words(row: str, sub: str, start: int = 0):
+def find_numeric_words(row: str, sub_str: str, start: int = 0, found: list = []):
+    """
+        Returns indexes from found words e.g. [0, 5]
+    """
+    find = row.find(sub_str, start)
 
-    find = row.find(sub, start)
+    if start >= len(row):
+        return found
 
     if find == -1:
-        return find
+        start += 1
+        return find_numeric_words(row, sub_str, start, found)
+
+    found.append(find)
+    start = start + len(sub_str)
+
+    return find_numeric_words(row, sub_str, start, found)
+
+
+assert find_numeric_words('user2user', 'user', 0, []) == [0, 5]
+assert find_numeric_words('m9qvkqlgfhtwo3seven4seven', 'one', 0, []) == []
 
 
 def parse_with_keywords(row: str) -> dict:
     parsed = {}
 
-    start_index = 0
     for numeric_word in numbers_dictionary.keys():
-        found = row.find(numeric_word, start_index)
-        if found != -1:
-            parsed[found] = numeric_word
-            start_index += len(numeric_word)
-        start_index += 1
+        indexes = find_numeric_words(row, numeric_word, 0, [])
+        for idx in indexes:
+            parsed[idx] = numeric_word
+
 
     for k in numbers_dictionary.values():
         for idx, l in enumerate(row):
@@ -87,13 +99,11 @@ def parse_with_keywords(row: str) -> dict:
     return dict(sorted(parsed.items()))
 
 
-print(parse_with_keywords('m9qvkqlgfhtwo3seven4seven'))
 
-assert parse_with_keywords('ttfourtwo3') == {2: 'four', 6: 'two', 9: '3'}
-assert parse_with_keywords('m9qvkqlgfhtwo3seven4seven') == {2: '9', 10: 'two', 13: '3', 14: 'seven', 19: '4',
+assert parse_with_keywords('m9qvkqlgfhtwo3seven4seven') == {1: '9', 10: 'two', 13: '3', 14: 'seven', 19: '4',
                                                             20: 'seven'}
 
-exit(0)
+assert parse_with_keywords('ttfourtwo3') == {2: 'four', 6: 'two', 9: '3'}
 
 
 def get_number_for_keywords_search(row_result: dict) -> list:
@@ -120,14 +130,15 @@ def calculate_sum_with_keywords(data: list) -> int:
 
 
 assert get_number_for_keywords_search({1: 'two', 3: 'four', 9: '9'}) == ['2', '4', '9']
-
-print(calculate_sum_with_keywords(load_data(TEST_DATA_2)))
-
 assert 281 == calculate_sum_with_keywords(load_data(TEST_DATA_2))
 
-print(calculate_sum_with_keywords(load_data(DATA_2)))
 
+print("Day_1 - part 2 result: ")
+print(
+    calculate_sum_with_keywords(load_data(DATA_2))
+)
 
+exit()
 def test_recognize_data(data: list):
     """
     Test function
