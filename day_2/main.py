@@ -128,5 +128,12 @@ set_possible_1 = Set([
     Cube(Color.BLUE, 1),
 ])
 
+set_impossible_1 = Set([
+    Cube(Color.RED, 100),
+    Cube(Color.GREEN, 11),
+    Cube(Color.BLUE, 1),
+])
+
 
 assert reveal_set.is_possible(set_possible_1)
+assert reveal_set.is_possible(set_impossible_1) == False
