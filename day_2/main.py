@@ -75,7 +75,7 @@ class RevealSet(Set):
             found_cube = set.get_by_color(color.color)
 
             if found_cube is None:
-                return False
+                continue
 
             if color.value <= found_cube.value:
                 return False
@@ -156,6 +156,9 @@ def count_possible_games(games: list) -> int:
     reveal_set = RevealSet()
     result = 0
     for game in games:
+
+        print(game.id, game.is_possible(reveal_set))
+
         if game.is_possible(reveal_set):
             result += game.id
 
