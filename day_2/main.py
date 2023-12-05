@@ -19,12 +19,6 @@ class Color(Enum):
     BLUE = 'glue'
 
 
-@dataclass
-class Game:
-    id: int
-    sets: list
-
-
 class Cube:
 
     def __init__(self, color: Color, value: int):
@@ -65,6 +59,7 @@ class RevealSet(Set):
         13 green cubes,
         and 14 blue cubes
     """
+
     def __init__(self):
         self.cubes = [
             Cube(Color.RED, 12),
@@ -86,6 +81,18 @@ class RevealSet(Set):
         return True
 
 
+@dataclass
+class Game:
+    id: int
+    sets: list
+
+    def is_possible(self, reveal_set: RevealSet) -> bool:
+        for set in self.sets:
+            if reveal_set.is_possible(set) is False:
+                return False
+
+        return True
+
 def get_game_id(game_title: str):
     result = re.search('\d', game_title)
 
@@ -99,16 +106,6 @@ def get_sets(sets: str):
     return sets.split(";")
 
 
-games = {}
-for plain_game in test_data:
-    title, cubes = plain_game.split(':')
-    game = Game(int(get_game_id(title)), [])
-
-    for set in get_sets(cubes):
-        new_set = Set([])
-        for cube in set.split(','):
-            new_set.add(Cube.from_plain(cube))
-        game.sets.append(new_set)
 
 
 red_6 = Cube.from_plain('6 red')
@@ -118,7 +115,6 @@ assert red_6.value == 6
 test_cube = Set([Cube(Color.RED, 6)])
 
 assert test_cube.get_by_color(Color.RED).value == 6
-
 
 reveal_set = RevealSet()
 
@@ -134,6 +130,34 @@ set_impossible_1 = Set([
     Cube(Color.BLUE, 1),
 ])
 
-
 assert reveal_set.is_possible(set_possible_1)
 assert reveal_set.is_possible(set_impossible_1) == False
+
+
+games = []
+for plain_game in test_data:
+    title, cubes = plain_game.split(':')
+    game = Game(int(get_game_id(title)), [])
+
+    for set in get_sets(cubes):
+        new_set = Set([])
+        for cube in set.split(','):
+            new_set.add(Cube.from_plain(cube))
+        game.sets.append(new_set)
+
+    games.append(game)
+
+
+def count_possible_games(games: list) -> int:
+    reveal_set = RevealSet()
+    result = 0
+    for game in games:
+        if game.is_possible(reveal_set):
+            result += game.id
+
+    return result
+
+
+result = count_possible_games(games)
+
+print(result)
