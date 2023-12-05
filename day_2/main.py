@@ -51,10 +51,10 @@ class Set:
         self.cubes.append(cube)
 
     def get_by_color(self, color: Color):
-        filtered = list(filter(lambda x: x.color.__eq__(color), self.cubes))
+        filtered = list(filter(lambda x: x.color.value == color.value, self.cubes))
 
         if not filtered:
-            raise ValueError(f"Color not found {color.value}")
+            return None
 
         return filtered[0]
 
@@ -66,15 +66,24 @@ class RevealSet(Set):
         and 14 blue cubes
     """
     def __init__(self):
-        super().__init__()
         self.cubes = [
             Cube(Color.RED, 12),
             Cube(Color.GREEN, 13),
             Cube(Color.BLUE, 14),
         ]
 
-    def is_possible(self, cube: Cube) -> bool:
-        pass
+    def is_possible(self, set: Set) -> bool:
+
+        for color in self.cubes:
+            found_cube = set.get_by_color(color.color)
+
+            if found_cube is None:
+                return False
+
+            if color.value <= found_cube.value:
+                return False
+
+        return True
 
 
 def get_game_id(game_title: str):
@@ -109,3 +118,15 @@ assert red_6.value == 6
 test_cube = Set([Cube(Color.RED, 6)])
 
 assert test_cube.get_by_color(Color.RED).value == 6
+
+
+reveal_set = RevealSet()
+
+set_possible_1 = Set([
+    Cube(Color.RED, 11),
+    Cube(Color.GREEN, 11),
+    Cube(Color.BLUE, 1),
+])
+
+
+assert reveal_set.is_possible(set_possible_1)
