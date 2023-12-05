@@ -5,6 +5,7 @@ from enum import Enum
 TEST_DATA_1 = 'input_test.txt'
 TEST_DATA = 'input.txt'
 
+
 def load_data(file_name: str) -> list:
     with open(file_name) as f:
         return [x.replace('\n', '') for x in f.readlines()]
@@ -12,6 +13,7 @@ def load_data(file_name: str) -> list:
 
 test_data = load_data(TEST_DATA_1)
 data_part_1 = load_data(TEST_DATA)
+
 
 class Color(Enum):
     RED = 'red'
@@ -93,8 +95,9 @@ class Game:
 
         return True
 
+
 def get_game_id(game_title: str):
-    result = re.search('\d', game_title)
+    result = re.search('\d{1,3}', game_title)
 
     if result is None:
         raise ValueError("Problem with GAME ID")
@@ -104,8 +107,6 @@ def get_game_id(game_title: str):
 
 def get_sets(sets: str):
     return sets.split(";")
-
-
 
 
 red_6 = Cube.from_plain('6 red')
@@ -132,8 +133,6 @@ set_impossible_1 = Set([
 
 assert reveal_set.is_possible(set_possible_1)
 assert reveal_set.is_possible(set_impossible_1) == False
-
-
 
 
 def build_game(test_data: list):
@@ -163,9 +162,8 @@ def count_possible_games(games: list) -> int:
     return result
 
 
-result = count_possible_games(build_game(test_data))
-
-print(result)
+# result = count_possible_games(build_game(test_data))
+# print(result)
 
 result_data = count_possible_games(build_game(data_part_1))
 
