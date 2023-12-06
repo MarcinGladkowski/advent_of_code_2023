@@ -38,17 +38,26 @@ class Point:
 
     def is_adjacent_symbol(self, schema: list) -> bool:
 
-        for x in schema[self.y-1][self.x-1:self.x+2]: # above line
-            if Symbols.is_symbol(x):
-                return True
+        try:
+            for x in schema[self.y - 1][self.x - 1:self.x + 2]:  # above line
+                if Symbols.is_symbol(x):
+                    return True
+        except IndexError:
+            return False
 
-        for x in schema[self.y][self.x-1:self.x+2]: # element line
-            if Symbols.is_symbol(x):
-                return True
+        try:
+            for x in schema[self.y][self.x - 1:self.x + 2]:  # element line
+                if Symbols.is_symbol(x):
+                    return True
+        except IndexError:
+            return False
 
-        for x in schema[self.y+1][self.x-1:self.x+2]: # below line\
-            if Symbols.is_symbol(x):
-                return True
+        try:
+            for x in schema[self.y+1][self.x-1:self.x+2]: # below line\
+                if Symbols.is_symbol(x):
+                    return True
+        except IndexError:
+            return False
 
         return False
 
@@ -82,8 +91,8 @@ def get_number_positions(line_index: int, line: str):
 
         start = line.find(number)
 
-        for _ in number:
-            schematic_number.positions.append(Point(line_index, start))
+        for i, _ in enumerate(number):
+            schematic_number.positions.append(Point(start+i, line_index))
 
         numbers_positions.append(schematic_number)
 
@@ -97,7 +106,7 @@ def parse_to_get_positions(data: list) -> list:
         number_positions = get_number_positions(i, line)
 
         if number_positions:
-            schema_positions.append(number_positions)
+            schema_positions.extend(number_positions)
 
     return schema_positions
 
@@ -105,7 +114,15 @@ def parse_to_get_positions(data: list) -> list:
 # test result = 4361
 def get_numbers_with_symbols(data: list):
     numbers = parse_to_get_positions(data)
+    sum = 0
+    for number in numbers:
+        for point in number.positions:
+
+            if point.is_adjacent_symbol(data):
+                sum += int(number.number)
+                break
+
+    return sum
 
 
-
-get_numbers_with_symbols(test_data)
+assert 4361 == get_numbers_with_symbols(test_data)
