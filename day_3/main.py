@@ -90,23 +90,22 @@ def get_number_positions(line_index: int, line: str):
     return numbers_positions
 
 
-schema_positions = []
-for i, line in enumerate(part_testing):
+def parse_to_get_positions(data: list) -> list:
+    schema_positions = []
+    for i, line in enumerate(data):
 
-    number_positions = get_number_positions(i, line)
+        number_positions = get_number_positions(i, line)
 
-    if number_positions:
-        schema_positions.append(number_positions)
+        if number_positions:
+            schema_positions.append(number_positions)
+
+    return schema_positions
 
 
 # test result = 4361
-for line_positions in schema_positions:
-    for position in line_positions:
-        print(position.number)
-
-
 def get_numbers_with_symbols(data: list):
-    for idx, row in enumerate(data):
-        print(row)
+    numbers = parse_to_get_positions(data)
+
+
 
 get_numbers_with_symbols(test_data)
