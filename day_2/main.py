@@ -107,7 +107,7 @@ class Game:
         for cube_set in self.sets:
             cube_set.__str__()
 
-    def sum_sets(self) -> dict:
+    def highest_color(self) -> dict:
         sum_sets_by_color = {
             'green': [],
             'red': [],
@@ -124,20 +124,30 @@ class Game:
             Color.BLUE.value: max(sum_sets_by_color[Color.BLUE.value]),
         }
 
+    def calculate_colors(self) -> int:
+
+        fewer_colors = self.highest_color()
+
+        return fewer_colors[Color.GREEN.value] * fewer_colors[Color.RED.value] * fewer_colors[Color.BLUE.value]
+
 
 sum_game = Game(1, [])
 
 set_1 = Set([])
 set_2 = Set([])
 set_1.add(Cube(Color.GREEN, 10))
+set_1.add(Cube(Color.RED, 10))
+set_1.add(Cube(Color.BLUE, 10))
 set_2.add(Cube(Color.GREEN, 20))
+set_2.add(Cube(Color.RED, 40))
+set_2.add(Cube(Color.BLUE, 50))
 sum_game.sets.append(set_1)
 sum_game.sets.append(set_2)
 
-sum_by_colors = sum_game.sum_sets()
+sum_by_colors = sum_game.highest_color()
 
 
-assert 30 == sum_by_colors.get_by_color(Color.GREEN).value
+assert 20 == sum_game.highest_color()[Color.GREEN.value]
 
 def get_game_id(game_title: str):
     result = re.search('\d{1,3}', game_title)
@@ -205,8 +215,17 @@ def count_possible_games(games: list) -> int:
     return result
 
 
+def count_power_of_colors(games: list) -> int:
+    result = 0
+    for game in games:
+        result += game.calculate_colors()
+
+    return result
+
 result = count_possible_games(build_game(test_data))
 # print(result)
 result_data = count_possible_games(build_game(data_part_1))
 
 assert result_data == 1853
+
+assert 72706 == count_power_of_colors(build_game(data_part_1))
