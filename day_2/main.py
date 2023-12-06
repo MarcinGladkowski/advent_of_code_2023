@@ -37,6 +37,9 @@ class Cube:
 
         return cls(Color[matches.group(2).upper()], int(matches.group(1)))
 
+    def __str__(self):
+        return f"Cube({self.color.value}, {self.value})"
+
 
 class Set:
 
@@ -53,6 +56,10 @@ class Set:
             return None
 
         return filtered[0]
+
+    def __str__(self):
+        for cube in self.cubes:
+            print(cube.__str__())
 
 
 class RevealSet(Set):
@@ -94,6 +101,11 @@ class Game:
                 return False
 
         return True
+
+    def __str__(self):
+        print("GAME")
+        for cube_set in self.sets:
+            cube_set.__str__()
 
     def sum_sets(self):
         sum_sets_by_color = {
@@ -188,7 +200,11 @@ def count_possible_games(games: list) -> int:
     result = 0
     for game in games:
 
-        #print(game.id, game.is_possible(reveal_set))
+        print(game.__str__())
+
+        game_sets_sum = game.sum_sets()
+
+        print(game.id, game.is_possible(reveal_set), reveal_set.is_possible(game_sets_sum))
 
         if game.is_possible(reveal_set):
             result += game.id
@@ -202,3 +218,5 @@ def count_possible_games(games: list) -> int:
 result_data = count_possible_games(build_game(data_part_1))
 
 print(result_data)
+
+# wrong answers: 1605, 225
