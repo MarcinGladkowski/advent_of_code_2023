@@ -18,7 +18,7 @@ data_part_1 = load_data(TEST_DATA)
 class Color(Enum):
     RED = 'red'
     GREEN = 'green'
-    BLUE = 'glue'
+    BLUE = 'blue'
 
 
 class Cube:
@@ -95,6 +95,37 @@ class Game:
 
         return True
 
+    def sum_sets(self):
+        sum_sets_by_color = {
+            'green': 0,
+            'red': 0,
+            'blue': 0,
+        }
+
+        for game_set in self.sets:
+            for cube in game_set.cubes:
+                sum_sets_by_color[cube.color.value] += cube.value
+
+        return Set([
+            Cube(Color.GREEN, sum_sets_by_color[Color.GREEN.value]),
+            Cube(Color.RED, sum_sets_by_color[Color.RED.value]),
+            Cube(Color.BLUE, sum_sets_by_color[Color.BLUE.value]),
+        ])
+
+
+sum_game = Game(1, [])
+
+set_1 = Set([])
+set_2 = Set([])
+set_1.add(Cube(Color.GREEN, 10))
+set_2.add(Cube(Color.GREEN, 20))
+sum_game.sets.append(set_1)
+sum_game.sets.append(set_2)
+
+sum_by_colors = sum_game.sum_sets()
+
+
+assert 30 == sum_by_colors.get_by_color(Color.GREEN).value
 
 def get_game_id(game_title: str):
     result = re.search('\d{1,3}', game_title)
@@ -157,7 +188,7 @@ def count_possible_games(games: list) -> int:
     result = 0
     for game in games:
 
-        print(game.id, game.is_possible(reveal_set))
+        #print(game.id, game.is_possible(reveal_set))
 
         if game.is_possible(reveal_set):
             result += game.id
