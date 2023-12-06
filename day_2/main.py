@@ -84,7 +84,7 @@ class RevealSet(Set):
             if found_cube is None:
                 continue
 
-            if color.value <= found_cube.value:
+            if color.value < found_cube.value:
                 return False
 
         return True
@@ -200,23 +200,21 @@ def count_possible_games(games: list) -> int:
     result = 0
     for game in games:
 
-        print(game.__str__())
+        #print(game.__str__())
 
         game_sets_sum = game.sum_sets()
 
-        print(game.id, game.is_possible(reveal_set), reveal_set.is_possible(game_sets_sum))
+        #print(game.id, game.is_possible(reveal_set))
 
         if game.is_possible(reveal_set):
+            print(result, game.id)
             result += game.id
 
     return result
 
 
-# result = count_possible_games(build_game(test_data))
+result = count_possible_games(build_game(test_data))
 # print(result)
-
 result_data = count_possible_games(build_game(data_part_1))
 
 print(result_data)
-
-# wrong answers: 1605, 225
