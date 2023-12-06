@@ -107,22 +107,22 @@ class Game:
         for cube_set in self.sets:
             cube_set.__str__()
 
-    def sum_sets(self):
+    def sum_sets(self) -> dict:
         sum_sets_by_color = {
-            'green': 0,
-            'red': 0,
-            'blue': 0,
+            'green': [],
+            'red': [],
+            'blue': [],
         }
 
         for game_set in self.sets:
             for cube in game_set.cubes:
-                sum_sets_by_color[cube.color.value] += cube.value
+                sum_sets_by_color[cube.color.value].append(cube.value)
 
-        return Set([
-            Cube(Color.GREEN, sum_sets_by_color[Color.GREEN.value]),
-            Cube(Color.RED, sum_sets_by_color[Color.RED.value]),
-            Cube(Color.BLUE, sum_sets_by_color[Color.BLUE.value]),
-        ])
+        return {
+            Color.RED.value: max(sum_sets_by_color[Color.RED.value]),
+            Color.GREEN.value: max(sum_sets_by_color[Color.GREEN.value]),
+            Color.BLUE.value: max(sum_sets_by_color[Color.BLUE.value]),
+        }
 
 
 sum_game = Game(1, [])
@@ -199,15 +199,7 @@ def count_possible_games(games: list) -> int:
     reveal_set = RevealSet()
     result = 0
     for game in games:
-
-        #print(game.__str__())
-
-        game_sets_sum = game.sum_sets()
-
-        #print(game.id, game.is_possible(reveal_set))
-
         if game.is_possible(reveal_set):
-            print(result, game.id)
             result += game.id
 
     return result
@@ -217,4 +209,4 @@ result = count_possible_games(build_game(test_data))
 # print(result)
 result_data = count_possible_games(build_game(data_part_1))
 
-print(result_data)
+assert result_data == 1853
