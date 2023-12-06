@@ -14,23 +14,13 @@ test_data = load_data(TEST_DATA)
 data = load_data(DATA)
 
 
-class Symbols(Enum):
-    HASHTAG = '#'
-    PLUS = '+'
-    DOLLAR = '$'
-    STAR = '*'
-    AT = '@'
-    EQUALS = '='
-    DASH = '-'
-    SLASH = '/'
+class Symbols:
 
     @staticmethod
     def is_symbol(char: str) -> bool:
-        for symbol in Symbols:
-            if char == symbol.value:
-                return True
-
-        return False
+        if char.isnumeric() or char == '.':
+            return False
+        return True
 
 
 class Point:
@@ -132,5 +122,5 @@ def get_numbers_with_symbols(data: list):
 
 
 assert 4361 == get_numbers_with_symbols(test_data)
-
+# to low 527116
 print(get_numbers_with_symbols(data))
