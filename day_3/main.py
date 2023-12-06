@@ -2,6 +2,7 @@ import re
 from enum import Enum
 
 TEST_DATA = 'input_test.txt'
+DATA = 'input.txt'
 
 
 def load_data(file_name: str) -> list:
@@ -10,6 +11,7 @@ def load_data(file_name: str) -> list:
 
 
 test_data = load_data(TEST_DATA)
+data = load_data(DATA)
 
 
 class Symbols(Enum):
@@ -126,3 +128,5 @@ def get_numbers_with_symbols(data: list):
 
 
 assert 4361 == get_numbers_with_symbols(test_data)
+
+print(get_numbers_with_symbols(data))
