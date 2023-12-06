@@ -19,6 +19,10 @@ class Symbols(Enum):
     PLUS = '+'
     DOLLAR = '$'
     STAR = '*'
+    AT = '@'
+    EQUALS = '='
+    DASH = '-'
+    SLASH = '/'
 
     @staticmethod
     def is_symbol(char: str) -> bool:
