@@ -63,6 +63,9 @@ class SchematicNumber:
     def __init__(self, number: str):
         self.number = number
         self.positions = []
+
+    def position(self) -> Point:
+        return Point(self.positions[0], self.positions[-1])
         
 
 part_testing = [
@@ -110,17 +113,33 @@ def parse_to_get_positions(data: list) -> list:
 # test result = 4361
 def get_numbers_with_symbols(data: list):
     numbers = parse_to_get_positions(data)
-    sum = 0
+
+    all_numbers = []
+    not_found = []
+    found = []
+    total = 0
     for number in numbers:
-        for point in number.positions:
+        all_numbers.append(int(number.number))
+        result = list(filter(lambda item: item.is_adjacent_symbol(data), number.positions))
 
-            if point.is_adjacent_symbol(data):
-                sum += int(number.number)
-                break
+        if result:
+            total += int(number.number)
+            found.append(int(number.number))
+        else:
+            not_found.append(int(number.number))
+            print(f"Not found number {number.number} at position {number.position()}")
 
-    return sum
+
+    assert len(found) + len(not_found) == len(numbers)
+
+    print(sum(found))
+    print(sum(not_found))
+    print(sum(all_numbers))
+
+    return total
 
 
-assert 4361 == get_numbers_with_symbols(test_data)
-# to low 527116
+#assert 4361 == get_numbers_with_symbols(test_data)
+
+# to low 527116, incorrect 587052
 print(get_numbers_with_symbols(data))
