@@ -34,26 +34,35 @@ class Point:
 
     def is_adjacent_symbol(self, schema: list) -> bool:
 
-        try:
-            for x in schema[self.y - 1][self.x - 1:self.x + 2]:  # above line
-                if Symbols.is_symbol(x):
-                    return True
-        except IndexError:
-            return False
+        start_point = self.x - 1 if self.x - 1 > -1 else 0
+
 
         try:
-            for x in schema[self.y][self.x - 1:self.x + 2]:  # element line
+            if self.y - 1 < 0:
+                raise IndexError
+
+            if self.x + 1 > len(schema[self.y - 1]):
+                raise IndexError
+
+            for x in schema[self.y - 1][start_point:self.x + 2]:  # above line
                 if Symbols.is_symbol(x):
                     return True
         except IndexError:
-            return False
+            pass
 
         try:
-            for x in schema[self.y+1][self.x-1:self.x+2]: # below line\
+            for x in schema[self.y][start_point:self.x + 2]:  # element line
                 if Symbols.is_symbol(x):
                     return True
         except IndexError:
-            return False
+            pass
+
+        try:
+            for x in schema[self.y + 1][start_point:self.x + 2]:  # below line
+                if Symbols.is_symbol(x):
+                    return True
+        except IndexError:
+            pass
 
         return False
 
@@ -66,7 +75,7 @@ class SchematicNumber:
 
     def position(self) -> Point:
         return Point(self.positions[0], self.positions[-1])
-        
+
 
 part_testing = [
     '....',
@@ -74,7 +83,7 @@ part_testing = [
     '#...'
 ]
 
-test_point = Point(1,1)
+test_point = Point(1, 1)
 
 assert test_point.is_adjacent_symbol(part_testing)
 
@@ -85,13 +94,13 @@ def get_number_positions(line_index: int, line: str):
     numbers_positions = []
 
     for number in numbers:
-        
+
         schematic_number = SchematicNumber(number)
 
         start = line.find(number)
 
         for i, _ in enumerate(number):
-            schematic_number.positions.append(Point(start+i, line_index))
+            schematic_number.positions.append(Point(start + i, line_index))
 
         numbers_positions.append(schematic_number)
 
@@ -129,7 +138,6 @@ def get_numbers_with_symbols(data: list):
             not_found.append(int(number.number))
             print(f"Not found number {number.number} at position {number.position()}")
 
-
     assert len(found) + len(not_found) == len(numbers)
 
     print(sum(found))
@@ -139,7 +147,7 @@ def get_numbers_with_symbols(data: list):
     return total
 
 
-#assert 4361 == get_numbers_with_symbols(test_data)
+# assert 4361 == get_numbers_with_symbols(test_data)
 
 # to low 527116, incorrect 587052
 print(get_numbers_with_symbols(data))
