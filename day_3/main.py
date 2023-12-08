@@ -32,10 +32,11 @@ class Point:
     def __str__(self):
         return f"{self.x} - {self.y}"
 
-    def is_adjacent_symbol(self, schema: list) -> bool:
+    def is_adjacent_symbol(self, schema: list):
 
         start_point = self.x - 1 if self.x - 1 > -1 else 0
 
+        neighbors = [[], [], []]
 
         try:
             if self.y - 1 < 0:
@@ -45,6 +46,9 @@ class Point:
                 raise IndexError
 
             for x in schema[self.y - 1][start_point:self.x + 2]:  # above line
+                # dump
+                neighbors[0].append(x)
+
                 if Symbols.is_symbol(x):
                     return True
         except IndexError:
@@ -52,6 +56,7 @@ class Point:
 
         try:
             for x in schema[self.y][start_point:self.x + 2]:  # element line
+                neighbors[1].append(x)
                 if Symbols.is_symbol(x):
                     return True
         except IndexError:
@@ -59,12 +64,13 @@ class Point:
 
         try:
             for x in schema[self.y + 1][start_point:self.x + 2]:  # below line
+                neighbors[2].append(x)
                 if Symbols.is_symbol(x):
                     return True
         except IndexError:
             pass
 
-        return False
+        return neighbors
 
 
 class SchematicNumber:
@@ -129,7 +135,7 @@ def get_numbers_with_symbols(data: list):
     total = 0
     for number in numbers:
         all_numbers.append(int(number.number))
-        result = list(filter(lambda item: item.is_adjacent_symbol(data), number.positions))
+        result = list(filter(lambda item: item.is_adjacent_symbol(data) is True, number.positions))
 
         if result:
             total += int(number.number)
@@ -137,6 +143,11 @@ def get_numbers_with_symbols(data: list):
         else:
             not_found.append(int(number.number))
             print(f"Not found number {number.number} at position {number.position()}")
+
+            points_results = list(map(lambda item: item.is_adjacent_symbol(data), number.positions))
+            for line in points_results:
+                print(line)
+
 
     assert len(found) + len(not_found) == len(numbers)
 
