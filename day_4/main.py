@@ -67,3 +67,7 @@ def calculate_sum(parsed: list):
 
 
 assert calculate_sum(separate_win_and_numbers(test_data)) == 13
+
+data = load_data('input.txt')
+
+assert calculate_sum(separate_win_and_numbers(data)) == 25231 # day one part_1
