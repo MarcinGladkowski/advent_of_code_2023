@@ -20,7 +20,8 @@ def transform_list(numbers: str) -> list:
 
 class Card:
 
-    def __init__(self, win_numbers: list, numbers: list):
+    def __init__(self, id: int, win_numbers: list, numbers: list):
+        self.int = id
         self.win_numbers = win_numbers
         self.numbers = numbers
 
@@ -40,7 +41,7 @@ class Card:
         return 2 ** power
 
 
-def separate_win_and_numbers(data: str) -> list:
+def parse_cards(data: str) -> list:
     cards = []
 
     for card in data:
@@ -49,6 +50,7 @@ def separate_win_and_numbers(data: str) -> list:
         title, win_numbers = win_numbers.split(':')
 
         card_round = Card(
+            card_number_from_title(title),
             transform_list(win_numbers),
             transform_list(numbers)
         )
@@ -66,8 +68,8 @@ def calculate_sum(parsed: list):
     return result
 
 
-assert calculate_sum(separate_win_and_numbers(test_data)) == 13
+assert calculate_sum(parse_cards(test_data)) == 13
 
 data = load_data('input.txt')
 
-assert calculate_sum(separate_win_and_numbers(data)) == 25231 # day one part_1
+assert calculate_sum(parse_cards(data)) == 25231 # day one part_1
