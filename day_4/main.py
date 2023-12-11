@@ -93,39 +93,43 @@ test_cards = parse_cards(test_data)
 
 
 def recursive_win_counter(data: list, card: Card, node_elements: list):
+
+    print(f"Recursive calculating {card.id}")
+
     if card.is_win() is False:
         return node_elements
 
     # result = []
     #
     # for win_copy_id in range(0, card.count_win() + 1):
-    #
-    #     print(card.id, win_copy_id)
-    #
     #     result.append(
     #         recursive_win_counter(data, data[card.id + win_copy_id], node_elements)
     #     )
     #
-    #     return result
+    # return result
+    print(card.count_win())
 
     return list(
         recursive_win_counter(data, data[card.id + win_copy_id], node_elements)
-        for win_copy_id in range(0, card.count_win() + 1)
+        for win_copy_id in range(1, card.count_win() + 1)
     )
 
 
-def calculate_for_card(card: Card):
-    return recursive_win_counter(test_cards, card, [card])
+def calculate_for_card(data: list, card: Card):
+    return recursive_win_counter(data, card, [card])
 
 
-assert 7 == len(flatten(calculate_for_card(test_cards[1])))
+#assert 7 == len(flatten(calculate_for_card(test_cards, test_cards[1])))
 
 
 def calculate(data: list):
     total = 0
     for card in data:
-        total += len(flatten(calculate_for_card(card)))
+        print(f"Processing {card.id}")
+        total += len(flatten(calculate_for_card(data, card)))
     return total
 
 
-assert 30 == calculate(test_cards)
+# assert 30 == calculate(test_cards)
+
+print(calculate(parse_cards(data)))

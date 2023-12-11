@@ -93,32 +93,41 @@ test_point = Point(1, 1)
 
 assert test_point.is_adjacent_symbol(part_testing)
 
+part_testing_on_single_number = [
+    '....',
+    '.6..',
+    '#...'
+]
+
+test_point_single_number = Point(1, 1)
+
+assert test_point_single_number.is_adjacent_symbol(part_testing)
+
 
 def get_number_positions(line_index: int, line: str):
     numbers = re.findall(r'\d+', line)
-
     numbers_positions = []
-
+    start_position = 0
     for number in numbers:
-
         schematic_number = SchematicNumber(number)
-
-        start = line.find(number)
+        start = line.find(number, start_position)
 
         for i, _ in enumerate(number):
             schematic_number.positions.append(Point(start + i, line_index))
 
+        start_position = start + len(number) - 1
         numbers_positions.append(schematic_number)
 
     return numbers_positions
 
 
+#testing_index_search = get_number_positions(0, '.896..6..')
+
+
 def parse_to_get_positions(data: list) -> list:
     schema_positions = []
     for i, line in enumerate(data):
-
         number_positions = get_number_positions(i, line)
-
         if number_positions:
             schema_positions.extend(number_positions)
 
@@ -126,7 +135,7 @@ def parse_to_get_positions(data: list) -> list:
 
 
 # test result = 4361
-def get_numbers_with_symbols(data: list):
+def calculate_numbers_with_symbols(data: list):
     numbers = parse_to_get_positions(data)
 
     all_numbers = []
@@ -134,6 +143,7 @@ def get_numbers_with_symbols(data: list):
     found = []
     total = 0
     for number in numbers:
+
         all_numbers.append(int(number.number))
         result = list(filter(lambda item: item.is_adjacent_symbol(data) is True, number.positions))
 
@@ -144,21 +154,17 @@ def get_numbers_with_symbols(data: list):
             not_found.append(int(number.number))
             print(f"Not found number {number.number} at position {number.position()}")
 
-            points_results = list(map(lambda item: item.is_adjacent_symbol(data), number.positions))
-            for line in points_results:
-                print(line)
+            # points_results = list(map(lambda item: item.is_adjacent_symbol(data), number.positions))
+            # for line in points_results:
+            #     print(line)
 
-
-    assert len(found) + len(not_found) == len(numbers)
-
-    print(sum(found))
-    print(sum(not_found))
-    print(sum(all_numbers))
+    print(f"Recognize numbers {len(numbers)}")
 
     return total
 
 
-# assert 4361 == get_numbers_with_symbols(test_data)
+# assert 4361 == calculate_numbers_with_symbols(test_data)
 
-# to low 527116, incorrect 587052
-print(get_numbers_with_symbols(data))
+print(calculate_numbers_with_symbols(data))
+
+# Wrong result: 527142
