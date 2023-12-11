@@ -2,6 +2,17 @@ from shared.main import load_data
 import re
 
 test_data = load_data('input_test.txt')
+data = load_data('input.txt')
+
+
+def flatten(test_list):
+    if isinstance(test_list, list):
+        if len(test_list) == 0:
+            return []
+        first, rest = test_list[0], test_list[1:]
+        return flatten(first) + flatten(rest)
+    else:
+        return [test_list]
 
 
 def card_number_from_title(title: str) -> int:
@@ -21,12 +32,18 @@ def transform_list(numbers: str) -> list:
 class Card:
 
     def __init__(self, id: int, win_numbers: list, numbers: list):
-        self.int = id
+        self.id = id
         self.win_numbers = win_numbers
         self.numbers = numbers
 
     def get_overlapped(self):
         return set(self.win_numbers) & set(self.numbers)
+
+    def count_win(self):
+        return len(self.get_overlapped())
+
+    def is_win(self):
+        return self.count_win() > 0
 
     def calculate_points(self):
         """
@@ -70,6 +87,45 @@ def calculate_sum(parsed: list):
 
 assert calculate_sum(parse_cards(test_data)) == 13
 
-data = load_data('input.txt')
+assert calculate_sum(parse_cards(data)) == 25231  # day one part_1
 
-assert calculate_sum(parse_cards(data)) == 25231 # day one part_1
+test_cards = parse_cards(test_data)
+
+
+def recursive_win_counter(data: list, card: Card, node_elements: list):
+    if card.is_win() is False:
+        return node_elements
+
+    # result = []
+    #
+    # for win_copy_id in range(0, card.count_win() + 1):
+    #
+    #     print(card.id, win_copy_id)
+    #
+    #     result.append(
+    #         recursive_win_counter(data, data[card.id + win_copy_id], node_elements)
+    #     )
+    #
+    #     return result
+
+    return list(
+        recursive_win_counter(data, data[card.id + win_copy_id], node_elements)
+        for win_copy_id in range(0, card.count_win() + 1)
+    )
+
+
+def calculate_for_card(card: Card):
+    return recursive_win_counter(test_cards, card, [card])
+
+
+assert 7 == len(flatten(calculate_for_card(test_cards[1])))
+
+
+def calculate(data: list):
+    total = 0
+    for card in data:
+        total += len(flatten(calculate_for_card(card)))
+    return total
+
+
+assert 30 == calculate(test_cards)
