@@ -21,15 +21,20 @@ class Symbols:
             return False
         return True
 
+    @staticmethod
+    def is_number(char: str):
+        return char.isnumeric()
+
 
 class Point:
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, value: str = None):
         self.x = x
         self.y = y
+        self.value = value
 
     def __str__(self):
-        return f"{self.x} - {self.y}"
+        return f"{self.x} - {self.y} - {self.value}"
 
     def is_adjacent_symbol(self, schema: list):
 
@@ -70,6 +75,41 @@ class Point:
             pass
 
         return neighbors
+
+    def count_collisions_with_numbers(self, schema: list) -> list:
+
+        start_point = self.x - 1 if self.x - 1 > -1 else 0
+
+        collisions_points = []
+
+        try:
+            if self.y - 1 < 0:
+                raise IndexError
+
+            if self.x + 1 > len(schema[self.y - 1]):
+                raise IndexError
+
+            for i, x in enumerate(schema[self.y - 1][start_point:self.x + 2]):  # above line
+                if Symbols.is_number(x):
+                    collisions_points.append(Point(i+start_point, self.y-1, x))
+        except IndexError:
+            pass
+
+        try:
+            for i, x in enumerate(schema[self.y][start_point:self.x + 2]):  # element line
+                if Symbols.is_number(x):
+                    collisions_points.append(Point(i+start_point, self.y, x))
+        except IndexError:
+            pass
+
+        try:
+            for i, x in enumerate(schema[self.y + 1][start_point:self.x + 2]):  # below line
+                if Symbols.is_number(x):
+                    collisions_points.append(Point(i+start_point, self.y+1, x))
+        except IndexError:
+            pass
+
+        return collisions_points
 
 
 class SchematicNumber:
@@ -140,10 +180,10 @@ assert testing_index_search[1].positions[0].x == 6
 assert testing_index_search[1].positions[0].y == 0
 
 
-def parse_to_get_positions(data: list) -> list:
+def parse_to_get_positions(finder: callable, data: list) -> list:
     schema_positions = []
     for i, line in enumerate(data):
-        number_positions = get_number_positions(find_all_numbers, i, line)
+        number_positions = get_number_positions(finder, i, line)
         if number_positions:
             schema_positions.extend(number_positions)
 
@@ -152,7 +192,7 @@ def parse_to_get_positions(data: list) -> list:
 
 # test result = 4361
 def calculate_numbers_with_symbols(data: list):
-    numbers = parse_to_get_positions(data)
+    numbers = parse_to_get_positions(find_all_numbers, data)
     total = 0
     for number in numbers:
 
@@ -170,3 +210,12 @@ assert 527144 == calculate_numbers_with_symbols(data)
 """
 Get gears * and theirs positions
 """
+gears_positions = parse_to_get_positions(find_all_gears, test_data)
+
+for gear in gears_positions:
+    for point in gear.positions:
+        collisions = point.count_collisions_with_numbers(test_data)
+
+        if collisions:
+            for point in collisions:
+                print(point)
