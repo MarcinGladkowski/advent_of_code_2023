@@ -1,4 +1,5 @@
 import re
+from functools import reduce
 
 TEST_DATA = 'input_test.txt'
 DATA = 'input.txt'
@@ -91,21 +92,21 @@ class Point:
 
             for i, x in enumerate(schema[self.y - 1][start_point:self.x + 2]):  # above line
                 if Symbols.is_number(x):
-                    collisions_points.append(Point(i+start_point, self.y-1, x))
+                    collisions_points.append(Point(i + start_point, self.y - 1, x))
         except IndexError:
             pass
 
         try:
             for i, x in enumerate(schema[self.y][start_point:self.x + 2]):  # element line
                 if Symbols.is_number(x):
-                    collisions_points.append(Point(i+start_point, self.y, x))
+                    collisions_points.append(Point(i + start_point, self.y, x))
         except IndexError:
             pass
 
         try:
             for i, x in enumerate(schema[self.y + 1][start_point:self.x + 2]):  # below line
                 if Symbols.is_number(x):
-                    collisions_points.append(Point(i+start_point, self.y+1, x))
+                    collisions_points.append(Point(i + start_point, self.y + 1, x))
         except IndexError:
             pass
 
@@ -120,6 +121,13 @@ class SchematicNumber:
 
     def position(self) -> Point:
         return Point(self.positions[0], self.positions[-1])
+
+    def is_collided_with(self, external_point: Point) -> bool:
+        for point in self.positions:
+            if point.x == external_point.x and point.y == external_point.y:
+                return True
+
+        return False
 
 
 part_testing = [
@@ -207,15 +215,39 @@ def calculate_numbers_with_symbols(data: list):
 assert 4361 == calculate_numbers_with_symbols(test_data)
 assert 527144 == calculate_numbers_with_symbols(data)
 
-"""
-Get gears * and theirs positions
-"""
-gears_positions = parse_to_get_positions(find_all_gears, test_data)
 
-for gear in gears_positions:
-    for point in gear.positions:
-        collisions = point.count_collisions_with_numbers(test_data)
+def calculate_gears(data: list):
+    """
+    Get gears * and theirs positions
+    """
+    gears_with_collisions = []
+    for gear in parse_to_get_positions(find_all_gears, data):
+        for point in gear.positions:
+            collisions = point.count_collisions_with_numbers(test_data)
 
-        if collisions:
-            for point in collisions:
-                print(point)
+            if collisions:
+                gears_with_collisions.append(collisions)
+
+    numbers = parse_to_get_positions(find_all_numbers, test_data)
+
+    collisions = []
+    for gears_collisions_points in gears_with_collisions:
+        collided_for_gear = []
+        for number in numbers:
+            for external_point in gears_collisions_points:
+                if number.is_collided_with(external_point):
+                    collided_for_gear.append(number.number)
+        collisions.append(
+            set(collided_for_gear)
+        )
+
+    els = list(map(lambda x: list(x), list(filter(lambda x: len(x) == 2, collisions))))
+
+    result = 0
+    for el in els:
+        result += int(el[0]) * int(el[1])
+
+    return result
+
+
+assert 467835 == calculate_gears(test_data)
