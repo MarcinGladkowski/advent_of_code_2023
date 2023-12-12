@@ -223,12 +223,12 @@ def calculate_gears(data: list):
     gears_with_collisions = []
     for gear in parse_to_get_positions(find_all_gears, data):
         for point in gear.positions:
-            collisions = point.count_collisions_with_numbers(test_data)
+            collisions = point.count_collisions_with_numbers(data)
 
             if collisions:
                 gears_with_collisions.append(collisions)
 
-    numbers = parse_to_get_positions(find_all_numbers, test_data)
+    numbers = parse_to_get_positions(find_all_numbers, data)
 
     collisions = []
     for gears_collisions_points in gears_with_collisions:
@@ -251,3 +251,5 @@ def calculate_gears(data: list):
 
 
 assert 467835 == calculate_gears(test_data)
+
+assert 81463996 == calculate_gears(data) # part 2
