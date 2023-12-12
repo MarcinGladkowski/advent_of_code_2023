@@ -103,8 +103,19 @@ test_point_single_number = Point(1, 1)
 assert test_point_single_number.is_adjacent_symbol(part_testing)
 
 
-def get_number_positions(line_index: int, line: str):
-    numbers = re.findall(r'\d+', line)
+def find_all_numbers(value: str):
+    return re.findall(r'\d+', value)
+
+
+def find_all_gears(value: str):
+    return re.findall(r'\*', value)
+
+
+assert 2 == len(find_all_gears('....*...*'))
+
+
+def get_number_positions(finder: callable, line_index: int, line: str):
+    numbers = finder(line)
     numbers_positions = []
     start_position = 0
     for number in numbers:
@@ -120,7 +131,7 @@ def get_number_positions(line_index: int, line: str):
     return numbers_positions
 
 
-testing_index_search = get_number_positions(0, '.896..6..')
+testing_index_search = get_number_positions(find_all_numbers, 0, '.896..6..')
 
 assert testing_index_search[0].number == '896'
 assert testing_index_search[1].number == '6'
@@ -128,10 +139,11 @@ assert testing_index_search[1].number == '6'
 assert testing_index_search[1].positions[0].x == 6
 assert testing_index_search[1].positions[0].y == 0
 
+
 def parse_to_get_positions(data: list) -> list:
     schema_positions = []
     for i, line in enumerate(data):
-        number_positions = get_number_positions(i, line)
+        number_positions = get_number_positions(find_all_numbers, i, line)
         if number_positions:
             schema_positions.extend(number_positions)
 
@@ -155,3 +167,6 @@ def calculate_numbers_with_symbols(data: list):
 assert 4361 == calculate_numbers_with_symbols(test_data)
 assert 527144 == calculate_numbers_with_symbols(data)
 
+"""
+Get gears * and theirs positions
+"""
