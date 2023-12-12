@@ -1,5 +1,4 @@
 import re
-from enum import Enum
 
 TEST_DATA = 'input_test.txt'
 DATA = 'input.txt'
@@ -115,14 +114,19 @@ def get_number_positions(line_index: int, line: str):
         for i, _ in enumerate(number):
             schematic_number.positions.append(Point(start + i, line_index))
 
-        start_position = start + len(number) - 1
+        start_position = start + len(number)
         numbers_positions.append(schematic_number)
 
     return numbers_positions
 
 
-#testing_index_search = get_number_positions(0, '.896..6..')
+testing_index_search = get_number_positions(0, '.896..6..')
 
+assert testing_index_search[0].number == '896'
+assert testing_index_search[1].number == '6'
+
+assert testing_index_search[1].positions[0].x == 6
+assert testing_index_search[1].positions[0].y == 0
 
 def parse_to_get_positions(data: list) -> list:
     schema_positions = []
@@ -137,34 +141,17 @@ def parse_to_get_positions(data: list) -> list:
 # test result = 4361
 def calculate_numbers_with_symbols(data: list):
     numbers = parse_to_get_positions(data)
-
-    all_numbers = []
-    not_found = []
-    found = []
     total = 0
     for number in numbers:
 
-        all_numbers.append(int(number.number))
         result = list(filter(lambda item: item.is_adjacent_symbol(data) is True, number.positions))
 
         if result:
             total += int(number.number)
-            found.append(int(number.number))
-        else:
-            not_found.append(int(number.number))
-            print(f"Not found number {number.number} at position {number.position()}")
-
-            # points_results = list(map(lambda item: item.is_adjacent_symbol(data), number.positions))
-            # for line in points_results:
-            #     print(line)
-
-    print(f"Recognize numbers {len(numbers)}")
 
     return total
 
 
-# assert 4361 == calculate_numbers_with_symbols(test_data)
+assert 4361 == calculate_numbers_with_symbols(test_data)
+assert 527144 == calculate_numbers_with_symbols(data)
 
-print(calculate_numbers_with_symbols(data))
-
-# Wrong result: 527142
