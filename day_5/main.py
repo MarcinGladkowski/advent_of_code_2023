@@ -31,7 +31,6 @@ class Category:
 
 '''
     seed-to-soil solution
-
     Test for seed 79    
 '''
 base = Category([Range(98, 2), Range(50, 48)])
@@ -65,12 +64,18 @@ def parse_input(data: list) -> list:
         'temperature-to-humidity': [],
         'humidity-to-location': [],
     }
-    for line in data:
+    for i, line in enumerate(data):
         if line.startswith('seeds'):
             """Seeds list parsing"""
             title, seeds = line.split(':')
             operations[title] = list(map(lambda x: int(x), filter(lambda x: x.isnumeric(), seeds.split(' '))))
+            continue
 
+        for operation in operations.keys():
+            if line.startswith(operation):
+                # save index of each operation to parse
+                operations[operation].append(i)
 
+    print(operations)
 
 parse_input(test_data)
