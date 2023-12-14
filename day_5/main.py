@@ -30,6 +30,9 @@ class Range:
     def diff_start(self, range) -> bool:
         return range.start - self.start
 
+    def __str__(self):
+        return f"{self.start} - {self.step}"
+
 
 class Category:
     def __init__(self, ranges: list[Range] = None):
@@ -56,7 +59,7 @@ line_to_parse = '50 98 2'
 
 
 def get_ranges_from_line(line: str) -> tuple:
-    destination_value, base_value, step_value = line.split(' ')
+    destination_value, base_value, step_value = map(lambda x: int(x), line.split(' '))
 
     return Range(base_value, step_value), Range(destination_value, step_value)
 
@@ -136,6 +139,25 @@ def parse_input(data: list) -> dict:
     return operations
 
 
-print(
-    parse_input(test_data)
-)
+parsed = parse_input(test_data)
+
+
+def calculate_seed(destination_to_source: dict, input_seed: int):
+    results = []
+    input_seed = input_seed
+    results.append(input_seed)
+    for operation, operation_map in destination_to_source.items():
+
+        if operation == 'seeds':
+            continue
+
+        result = calculate_destination(operation_map['base'], operation_map['dest'], input_seed)
+        input_seed = result
+        results.append(input_seed)
+
+    return results
+
+
+""" Seed 79 -> soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82."""
+assert [79, 81, 81, 81, 74, 78, 78, 82] == calculate_seed(parsed, 79)
+
