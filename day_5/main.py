@@ -69,3 +69,14 @@ assert 14 == calculate_destination(base,destination,14)
 assert 57 == calculate_destination(base,destination,55)
 assert 13 == calculate_destination(base,destination,13)
 
+"""
+    soil-to-fertilizer
+    
+    0 15 37
+    37 52 2
+    39 0 15
+"""
+base = Category([Range(98, 2), Range(50, 48)])
+destination = Category([Range(50, 2), Range(52, 48)])
+
+
