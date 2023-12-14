@@ -161,3 +161,12 @@ def calculate_seed(destination_to_source: dict, input_seed: int):
 """ Seed 79 -> soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82."""
 assert [79, 81, 81, 81, 74, 78, 78, 82] == calculate_seed(parsed, 79)
 
+"""Seed 14, soil 14, fertilizer 53, water 49, light 42, temperature 42, humidity 43, location 43. """
+assert [14, 14, 53, 49, 42, 42, 43, 43] == calculate_seed(parsed, 14)
+
+"""Seed 55, soil 57, fertilizer 57, water 53, light 46, temperature 82, humidity 82, location 86."""
+assert [55, 57, 57, 53, 46, 82, 82, 86] == calculate_seed(parsed, 55)
+
+"""Seed 13, soil 13, fertilizer 52, water 41, light 34, temperature 34, humidity 35, location 35."""
+assert [13, 13, 52, 41, 34, 34, 35, 35] == calculate_seed(parsed, 13)
+
