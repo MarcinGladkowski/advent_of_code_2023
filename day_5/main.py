@@ -183,3 +183,6 @@ def calculate_with_all_seeds(data: list):
 
 
 assert 35 == calculate_with_all_seeds(test_data)
+
+
+print(calculate_with_all_seeds(data))
