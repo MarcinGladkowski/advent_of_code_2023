@@ -5,21 +5,6 @@ test_data = load_data('input_test.txt')
 sanitize = [x for x in test_data if x != '']
 
 
-def parse_input(data: list) -> list:
-    operations = {
-        'seed-to-soil': [],
-        'soil-to-fertilizer': [],
-        'fertilizer-to-water': [],
-        'water-to-light': [],
-        'light-to-temperature': [],
-        'temperature-to-humidity': [],
-        'humidity-to-location': [],
-    }
-    for line in sanitize:
-        if line.startswith('seeds'):
-            operations['seeds'] = line
-
-
 class Range:
 
     def __init__(self, start: int, step: int):
@@ -64,19 +49,28 @@ def calculate_destination(base: Category, destination: Category, test_seed: int)
     return test_seed
 
 
-assert 81 == calculate_destination(base,destination,79)
-assert 14 == calculate_destination(base,destination,14)
-assert 57 == calculate_destination(base,destination,55)
-assert 13 == calculate_destination(base,destination,13)
-
-"""
-    soil-to-fertilizer
-    
-    0 15 37
-    37 52 2
-    39 0 15
-"""
-base = Category([Range(98, 2), Range(50, 48)])
-destination = Category([Range(50, 2), Range(52, 48)])
+assert 81 == calculate_destination(base, destination, 79)
+assert 14 == calculate_destination(base, destination, 14)
+assert 57 == calculate_destination(base, destination, 55)
+assert 13 == calculate_destination(base, destination, 13)
 
 
+def parse_input(data: list) -> list:
+    operations = {
+        'seed-to-soil': [],
+        'soil-to-fertilizer': [],
+        'fertilizer-to-water': [],
+        'water-to-light': [],
+        'light-to-temperature': [],
+        'temperature-to-humidity': [],
+        'humidity-to-location': [],
+    }
+    for line in data:
+        if line.startswith('seeds'):
+            """Seeds list parsing"""
+            title, seeds = line.split(':')
+            operations[title] = list(map(lambda x: int(x), filter(lambda x: x.isnumeric(), seeds.split(' '))))
+
+
+
+parse_input(test_data)
