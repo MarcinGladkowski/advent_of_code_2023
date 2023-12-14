@@ -33,7 +33,7 @@ class Range:
 
 class Category:
     def __init__(self, ranges: list[Range] = None):
-        self.ranges = ranges
+        self.ranges = [] if ranges is None else ranges
 
     def get_range(self, index: int):
         return self.ranges[index]
@@ -51,6 +51,14 @@ class Category:
 '''
 base = Category([Range(98, 2), Range(50, 48)])
 destination = Category([Range(50, 2), Range(52, 48)])
+
+line_to_parse = '50 98 2'
+
+
+def get_ranges_from_line(line: str) -> tuple:
+    destination_value, base_value, step_value = line.split(' ')
+
+    return Range(base_value, step_value), Range(destination_value, step_value)
 
 
 def calculate_destination(base: Category, destination: Category, test_seed: int) -> int:
@@ -70,20 +78,41 @@ assert 57 == calculate_destination(base, destination, 55)
 assert 13 == calculate_destination(base, destination, 13)
 
 
-def parse_input(data: list) -> list:
+def parse_input(data: list) -> dict:
     operations = {
-        'seed-to-soil': None,
-        'soil-to-fertilizer': None,
-        'fertilizer-to-water': None,
-        'water-to-light': None,
-        'light-to-temperature': None,
-        'temperature-to-humidity': None,
-        'humidity-to-location': None,
+        'seed-to-soil': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'soil-to-fertilizer': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'fertilizer-to-water': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'water-to-light': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'light-to-temperature': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'temperature-to-humidity': {
+            'dest': Category(),
+            'base': Category()
+        },
+        'humidity-to-location': {
+            'dest': Category(),
+            'base': Category()
+        },
     }
     operation_pointer = None
     for i, line in enumerate(data):
+
         if line.startswith('seeds'):
-            """Seeds list parsing"""
             title, seeds = line.split(':')
             operations[title] = list(map(lambda x: int(x), filter(lambda x: x.isnumeric(), seeds.split(' '))))
             continue
@@ -99,14 +128,14 @@ def parse_input(data: list) -> list:
                 continue
 
             if is_data_line_numeric(line):
-                print(operation_pointer, line)
+                base, dest = get_ranges_from_line(line)
+                operations[operation_pointer]['base'].add_range(base)
+                operations[operation_pointer]['dest'].add_range(dest)
                 break
 
+    return operations
 
 
-
-
-
-    print(operations)
-
-parse_input(test_data)
+print(
+    parse_input(test_data)
+)
