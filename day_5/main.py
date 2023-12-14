@@ -1,11 +1,9 @@
 from shared.main import load_data
 
 test_data = load_data('input_test.txt')
-
-sanitize = [x for x in test_data if x != '']
+data = load_data('input.txt')
 
 assert '50 98 2'.replace(' ', '').isnumeric()
-
 
 def is_data_line_numeric(line: str) -> bool:
     return line.replace(' ', '').isnumeric()
@@ -170,3 +168,18 @@ assert [55, 57, 57, 53, 46, 82, 82, 86] == calculate_seed(parsed, 55)
 """Seed 13, soil 13, fertilizer 52, water 41, light 34, temperature 34, humidity 35, location 35."""
 assert [13, 13, 52, 41, 34, 34, 35, 35] == calculate_seed(parsed, 13)
 
+
+def calculate_with_all_seeds(data: list):
+    """last number is location, the lowest from all of them"""
+    parsed = parse_input(data)
+
+    locations = []
+    for seed in parsed['seeds']:
+        map_result = calculate_seed(parsed, seed)
+
+        locations.append(map_result[-1])
+
+    return min(locations)
+
+
+assert 35 == calculate_with_all_seeds(test_data)
