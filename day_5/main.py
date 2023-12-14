@@ -4,6 +4,16 @@ test_data = load_data('input_test.txt')
 
 sanitize = [x for x in test_data if x != '']
 
+assert '50 98 2'.replace(' ', '').isnumeric()
+
+
+def is_data_line_numeric(line: str) -> bool:
+    return line.replace(' ', '').isnumeric()
+
+
+def get_operation_name(line: str) -> str:
+    return line.replace(' map:', '')
+
 
 class Range:
 
@@ -22,16 +32,22 @@ class Range:
 
 
 class Category:
-    def __init__(self, ranges: list[Range]):
+    def __init__(self, ranges: list[Range] = None):
         self.ranges = ranges
 
     def get_range(self, index: int):
         return self.ranges[index]
 
+    def add_range(self, range: Range) -> None:
+        self.ranges.append(range)
+
 
 '''
     seed-to-soil solution
-    Test for seed 79    
+    Test for seed 79   
+    
+    50 98 2
+    52 50 48 
 '''
 base = Category([Range(98, 2), Range(50, 48)])
 destination = Category([Range(50, 2), Range(52, 48)])
@@ -56,14 +72,15 @@ assert 13 == calculate_destination(base, destination, 13)
 
 def parse_input(data: list) -> list:
     operations = {
-        'seed-to-soil': [],
-        'soil-to-fertilizer': [],
-        'fertilizer-to-water': [],
-        'water-to-light': [],
-        'light-to-temperature': [],
-        'temperature-to-humidity': [],
-        'humidity-to-location': [],
+        'seed-to-soil': None,
+        'soil-to-fertilizer': None,
+        'fertilizer-to-water': None,
+        'water-to-light': None,
+        'light-to-temperature': None,
+        'temperature-to-humidity': None,
+        'humidity-to-location': None,
     }
+    operation_pointer = None
     for i, line in enumerate(data):
         if line.startswith('seeds'):
             """Seeds list parsing"""
@@ -72,9 +89,23 @@ def parse_input(data: list) -> list:
             continue
 
         for operation in operations.keys():
-            if line.startswith(operation):
-                # save index of each operation to parse
-                operations[operation].append(i)
+
+            if line.startswith(operation) and operation_pointer is not None:
+                operation_pointer = get_operation_name(operation)
+                continue
+
+            if line.startswith(operation) and operation_pointer is None:
+                operation_pointer = get_operation_name(operation)
+                continue
+
+            if is_data_line_numeric(line):
+                print(line)
+                break
+
+
+
+
+
 
     print(operations)
 
