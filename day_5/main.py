@@ -99,7 +99,7 @@ def parse_input(data: list) -> list:
                 continue
 
             if is_data_line_numeric(line):
-                print(line)
+                print(operation_pointer, line)
                 break
 
 
