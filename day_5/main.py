@@ -5,6 +5,7 @@ data = load_data('input.txt')
 
 assert '50 98 2'.replace(' ', '').isnumeric()
 
+
 def is_data_line_numeric(line: str) -> bool:
     return line.replace(' ', '').isnumeric()
 
@@ -27,6 +28,9 @@ class Range:
 
     def diff_start(self, range) -> bool:
         return range.start - self.start
+
+    def get_as_list(self) -> list:
+        return [x for x in range(self.start, self.start+self.step)]
 
     def __str__(self):
         return f"{self.start} - {self.step}"
@@ -184,5 +188,31 @@ def calculate_with_all_seeds(data: list):
 
 assert 35 == calculate_with_all_seeds(test_data)
 
-
 print(calculate_with_all_seeds(data))
+
+assert 92 == Range(79, 14).get_as_list()[-1]
+
+
+def calculate_all_seeds_range(data: list):
+    """
+        - last number is location, the lowest from all of them
+        - get ranges of seeds
+    """
+    parsed = parse_input(data)
+
+    ranges = []
+
+    for i, seed in enumerate(parsed['seeds']):
+        if i == 0 or i % 2 == 0:
+            ranges += Range(seed, parsed['seeds'][i+1]).get_as_list()
+
+    locations = []
+    for seed in ranges:
+        map_result = calculate_seed(parsed, seed)
+
+        locations.append(map_result[-1])
+
+    return min(locations)
+
+
+assert 46 == calculate_all_seeds_range(test_data)
