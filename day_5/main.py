@@ -29,8 +29,8 @@ class Range:
     def diff_start(self, range) -> bool:
         return range.start - self.start
 
-    def get_as_list(self) -> list:
-        return [x for x in range(self.start, self.start+self.step)]
+    def get_range(self) -> range:
+        return range(self.start, self.start+self.step)
 
     def __str__(self):
         return f"{self.start} - {self.step}"
@@ -190,7 +190,7 @@ assert 35 == calculate_with_all_seeds(test_data)
 
 print(calculate_with_all_seeds(data))
 
-assert 92 == Range(79, 14).get_as_list()[-1]
+##assert 92 == Range(79, 14).get_as_list()[-1]
 
 
 def calculate_all_seeds_range(data: list):
@@ -202,17 +202,22 @@ def calculate_all_seeds_range(data: list):
 
     ranges = []
 
+    # use generators
     for i, seed in enumerate(parsed['seeds']):
         if i == 0 or i % 2 == 0:
-            ranges += Range(seed, parsed['seeds'][i+1]).get_as_list()
+            ranges.append(Range(seed, parsed['seeds'][i+1]).get_range())
 
     locations = []
-    for seed in ranges:
-        map_result = calculate_seed(parsed, seed)
 
-        locations.append(map_result[-1])
+    for number_ranges in ranges:
+        for seed in number_ranges:
+            map_result = calculate_seed(parsed, seed)
+
+            locations.append(map_result[-1])
 
     return min(locations)
 
 
 assert 46 == calculate_all_seeds_range(test_data)
+
+print(calculate_all_seeds_range(data))
