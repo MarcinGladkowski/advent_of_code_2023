@@ -216,6 +216,8 @@ def calculate_all_seeds_range(data: list):
     """
         - last number is location, the lowest from all of them
         - get ranges of seeds
+
+        - add processing on threads ?
     """
     parsed = parse_input(data)
 
