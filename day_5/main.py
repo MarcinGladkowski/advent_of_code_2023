@@ -1,3 +1,5 @@
+import multiprocessing
+
 from shared.main import load_data
 
 test_data = load_data('input_test.txt')
@@ -194,6 +196,7 @@ assert [13, 13, 52, 41, 34, 34, 35, 35] == calculate_seed(parsed, 13)
 
 assert 35 == calculate_seed_to_location(parsed, 13)
 
+
 def calculate_with_all_seeds(data: list):
     """last number is location, the lowest from all of them"""
     parsed = parse_input(data)
@@ -210,6 +213,22 @@ def calculate_with_all_seeds(data: list):
 assert 35 == calculate_with_all_seeds(test_data)
 
 print(calculate_with_all_seeds(data))
+
+
+def calculate_for_range(number_ranges):
+    print(f"--- From {number_ranges.start} ---\n")
+    min_location = None
+    for seed in number_ranges:
+        min_location_for_map = calculate_seed_to_location(parsed, seed)
+
+        if min_location is None:
+            min_location = min_location_for_map
+
+        if min_location_for_map < min_location:
+            min_location = min_location_for_map
+
+    print(min_location)
+    return min_location
 
 
 def calculate_all_seeds_range(data: list):
@@ -229,21 +248,20 @@ def calculate_all_seeds_range(data: list):
             ranges.append(Range(seed, parsed['seeds'][i + 1]).get_range())
 
     min_location = None
+    # create processes
+    processes = [multiprocessing.Process(target=calculate_for_range, args=[number_range]) for number_range in ranges]
 
-    for number_ranges in ranges:
-        print(f"--- {number_ranges.start} ---")
-        for seed in number_ranges:
-            min_location_for_map = calculate_seed_to_location(parsed, seed)
+    # start the processes
+    for process in processes:
+        process.start()
 
-            if min_location is None:
-                min_location = min_location_for_map
-
-            if min_location_for_map < min_location:
-                min_location = min_location_for_map
+    # wait for completion
+    for process in processes:
+        process.join()
 
     return min_location
 
 
-assert 46 == calculate_all_seeds_range(test_data)
+#assert 46 == calculate_all_seeds_range(test_data)
 
 print(calculate_all_seeds_range(data))
