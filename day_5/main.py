@@ -212,9 +212,6 @@ assert 35 == calculate_with_all_seeds(test_data)
 print(calculate_with_all_seeds(data))
 
 
-##assert 92 == Range(79, 14).get_as_list()[-1]
-
-
 def calculate_all_seeds_range(data: list):
     """
         - last number is location, the lowest from all of them
@@ -229,15 +226,20 @@ def calculate_all_seeds_range(data: list):
         if i == 0 or i % 2 == 0:
             ranges.append(Range(seed, parsed['seeds'][i + 1]).get_range())
 
-    locations = []
+    min_location = None
 
     for number_ranges in ranges:
+        print(f"--- {number_ranges.start} ---")
         for seed in number_ranges:
-            map_result = calculate_seed(parsed, seed)
+            min_location_for_map = calculate_seed_to_location(parsed, seed)
 
-            locations.append(map_result[-1])
+            if min_location is None:
+                min_location = min_location_for_map
 
-    return min(locations)
+            if min_location_for_map < min_location:
+                min_location = min_location_for_map
+
+    return min_location
 
 
 assert 46 == calculate_all_seeds_range(test_data)
