@@ -30,7 +30,7 @@ class Range:
         return range.start - self.start
 
     def get_range(self) -> range:
-        return range(self.start, self.start+self.step)
+        return range(self.start, self.start + self.step)
 
     def __str__(self):
         return f"{self.start} - {self.step}"
@@ -144,7 +144,10 @@ def parse_input(data: list) -> dict:
 parsed = parse_input(test_data)
 
 
-def calculate_seed(destination_to_source: dict, input_seed: int):
+def calculate_seed(destination_to_source: dict, input_seed: int) -> list:
+    """
+        This version grab all destinations results
+    """
     results = []
     input_seed = input_seed
     results.append(input_seed)
@@ -160,6 +163,23 @@ def calculate_seed(destination_to_source: dict, input_seed: int):
     return results
 
 
+def calculate_seed_to_location(destination_to_source: dict, input_seed: int) -> int:
+    """
+        Gets only last location
+    """
+    input_seed = input_seed
+    result = None
+    for operation, operation_map in destination_to_source.items():
+
+        if operation == 'seeds':
+            continue
+
+        result = calculate_destination(operation_map['base'], operation_map['dest'], input_seed)
+        input_seed = result
+
+    return result
+
+
 """ Seed 79 -> soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82."""
 assert [79, 81, 81, 81, 74, 78, 78, 82] == calculate_seed(parsed, 79)
 
@@ -172,6 +192,7 @@ assert [55, 57, 57, 53, 46, 82, 82, 86] == calculate_seed(parsed, 55)
 """Seed 13, soil 13, fertilizer 52, water 41, light 34, temperature 34, humidity 35, location 35."""
 assert [13, 13, 52, 41, 34, 34, 35, 35] == calculate_seed(parsed, 13)
 
+assert 35 == calculate_seed_to_location(parsed, 13)
 
 def calculate_with_all_seeds(data: list):
     """last number is location, the lowest from all of them"""
@@ -190,6 +211,7 @@ assert 35 == calculate_with_all_seeds(test_data)
 
 print(calculate_with_all_seeds(data))
 
+
 ##assert 92 == Range(79, 14).get_as_list()[-1]
 
 
@@ -205,7 +227,7 @@ def calculate_all_seeds_range(data: list):
     # use generators
     for i, seed in enumerate(parsed['seeds']):
         if i == 0 or i % 2 == 0:
-            ranges.append(Range(seed, parsed['seeds'][i+1]).get_range())
+            ranges.append(Range(seed, parsed['seeds'][i + 1]).get_range())
 
     locations = []
 
