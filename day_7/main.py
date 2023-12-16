@@ -23,22 +23,25 @@ class CardSet:
 
     def get_type(self) -> Type:
 
-        count_cards_occurences = list(Counter(self.set).values())
-
-        if operator.countOf(count_cards_occurences, 5) == 1:
+        if self._occurences_of_same_cards_count(5):
             return Type.FIVE
 
-        if operator.countOf(count_cards_occurences, 4) == 1:
+        if self._occurences_of_same_cards_count(4):
             return Type.FOUR
 
-        if operator.countOf(count_cards_occurences, 2) == 2:
-            return Type.TWO_PAIR
-
-        if operator.countOf(count_cards_occurences, 3) == 1:
+        if self._occurences_of_same_cards_count(3):
             return Type.THREE
 
-        if operator.countOf(count_cards_occurences, 2) == 1:
+        if self._occurences_of_same_cards_count(2, 2):
+            return Type.TWO_PAIR
+
+        if self._occurences_of_same_cards_count(2):
             return Type.ONE_PAIR
+
+        return Type.HIGH_CARD
+
+    def _occurences_of_same_cards_count(self, occurence_of_combination: int, count: int = 1):
+        return operator.countOf(list(Counter(self.set).values()), occurence_of_combination) == count
 
 '''
 32T3K 765
@@ -60,3 +63,4 @@ assert Type.THREE == CardSet('T55J5', 765).get_type()
 assert Type.TWO_PAIR == CardSet('KK677', 765).get_type()
 assert Type.FOUR == CardSet('AA7AA', 765).get_type()
 assert Type.FIVE == CardSet('TTTTT', 765).get_type()
+assert Type.HIGH_CARD == CardSet('23456', 765).get_type()
