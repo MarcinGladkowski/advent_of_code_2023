@@ -1,7 +1,45 @@
+from shared.main import load_data
+
+test_data = load_data('input_test.txt')
+
+
 class Race:
     def __init__(self, time: int, distance: int):
         self.distance = distance
         self.time = time
+
+
+def parse_data(data: list) -> tuple:
+    for line in data:
+        if line.startswith('Time'):
+            title, race_times = line.split(':')
+
+    for line in data:
+        if line.startswith('Time'):
+            title, distances = line.split(':')
+
+    return race_times, distances
+
+
+def parse_lists(raw_data: str):
+    return list(map(lambda x: int(x), filter(lambda x: x.isnumeric(), raw_data)))
+
+
+times, distances = parse_data(test_data)
+times = parse_lists(times)
+
+distances = parse_lists(distances)
+
+
+def to_races(times: list, distances: list) -> list:
+    races = []
+    for i in range(len(times)):
+        races.append(Race(times[i], distances[i]))
+
+    return races
+
+
+print(to_races(times, distances))
 
 
 class RaceWinCalculator:
@@ -30,7 +68,6 @@ assert RaceWinCalculator.is_win_for_hold(4, Race(7, 9))
 assert RaceWinCalculator.is_win_for_hold(5, Race(7, 9))
 assert False == RaceWinCalculator.is_win_for_hold(6, Race(7, 9))
 assert False == RaceWinCalculator.is_win_for_hold(7, Race(7, 9))
-
 
 assert 4 == RaceWinCalculator.count_win_holds(Race(7, 9))
 assert 8 == RaceWinCalculator.count_win_holds(Race(15, 40))
