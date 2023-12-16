@@ -88,9 +88,6 @@ def bubble_sort(array):
     for i in range(n):
         already_sorted = True
         for j in range(n - i - 1):
-
-            print(f"Result of {CardSetsComparator.compare(array[j], array[j + 1])} | {array[j].set} and {array[j+1].set}")
-
             if CardSetsComparator.compare(array[j], array[j + 1]):
                 array[j], array[j + 1] = array[j + 1], array[j]
                 already_sorted = False
@@ -100,10 +97,7 @@ def bubble_sort(array):
     return array
 
 
-bubble_sort(test_cards_desk)
-
-for sorted_card in test_cards_desk:
-    print(sorted_card.set)
+sorted_test_cards_desk = bubble_sort(test_cards_desk)
 
 expected_order = [
     CardSet('QQQJA', 483),
@@ -113,3 +107,13 @@ expected_order = [
     CardSet('32T3K', 765),
 ]
 
+
+def calculate_result(sorted: list) -> int:
+    sum = 0
+    for i, card in enumerate(sorted):
+        sum += card.bid * (i + 1)
+
+    return sum
+
+
+assert 6440 == calculate_result(test_cards_desk)
