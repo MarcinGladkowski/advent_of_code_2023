@@ -122,10 +122,25 @@ expected_order = [
 
 def calculate_result(desk: list) -> int:
     sum = 0
-    for i, card in enumerate(bubble_sort(desk)):
+
+    sort_desk = bubble_sort(desk)
+
+    for i, card in enumerate(sort_desk):
         sum += card.bid * (i + 1)
 
     return sum
 
 
 assert 6440 == calculate_result(parse_to_card_desk(test_data))
+
+
+data = load_data('input.txt')
+"""
+Result to high: 253514144
+"""
+#print(len(parse_to_card_desk(data)) == 1000)
+
+
+print(
+    calculate_result(parse_to_card_desk(data))
+)
