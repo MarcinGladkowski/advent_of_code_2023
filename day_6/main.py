@@ -40,7 +40,6 @@ def to_races(times: list, distances: list) -> list:
     return races
 
 
-
 class RaceWinCalculator:
 
     @staticmethod
@@ -62,7 +61,7 @@ class RaceWinCalculator:
     @staticmethod
     def calculate_result(races: list):
         return reduce(
-            lambda a, b: a*b,
+            lambda a, b: a * b,
             [RaceWinCalculator.count_win_holds(race) for race in races]
         )
 
@@ -92,3 +91,16 @@ distances = parse_lists(distances)
 races = to_races(times, distances)
 
 assert 781200 == RaceWinCalculator.calculate_result(races)
+
+'''part 2'''
+times, distances = parse_data(load_data('input.txt'))
+
+
+def parse_to_single_value(raw_data: str) -> int:
+    return int(raw_data.replace(' ', ''))
+
+
+time = parse_to_single_value(times)
+distance = parse_to_single_value(distances)
+
+assert 49240091 == RaceWinCalculator.count_win_holds(Race(time, distance))
