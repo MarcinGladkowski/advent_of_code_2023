@@ -2,6 +2,10 @@ import operator
 from enum import Enum
 from collections import Counter
 
+from shared.main import load_data
+
+test_data = load_data('test_input.txt')
+
 cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
@@ -82,6 +86,14 @@ assert CardSetsComparator.compare(CardSet('KK677', 765), CardSet('KTJJT', 765))
 assert CardSetsComparator.compare(CardSet('T55J5', 765), CardSet('KK677', 765))
 
 
+def parse_to_card_desk(data: list) -> list:
+    desk = []
+    for line in data:
+        card_set, bid = line.split(' ')
+        desk.append(CardSet(card_set, int(bid)))
+    return desk
+
+
 def bubble_sort(array):
     n = len(array)
 
@@ -108,12 +120,12 @@ expected_order = [
 ]
 
 
-def calculate_result(sorted: list) -> int:
+def calculate_result(desk: list) -> int:
     sum = 0
-    for i, card in enumerate(sorted):
+    for i, card in enumerate(bubble_sort(desk)):
         sum += card.bid * (i + 1)
 
     return sum
 
 
-assert 6440 == calculate_result(test_cards_desk)
+assert 6440 == calculate_result(parse_to_card_desk(test_data))
