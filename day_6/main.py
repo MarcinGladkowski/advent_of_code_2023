@@ -82,3 +82,13 @@ assert 9 == RaceWinCalculator.count_win_holds(Race(30, 200))
 test_races = to_races(times, distances)
 
 assert 288 == RaceWinCalculator.calculate_result(test_races)
+
+'''part 1 data'''
+times, distances = parse_data(load_data('input.txt'))
+
+times = parse_lists(times)
+distances = parse_lists(distances)
+
+races = to_races(times, distances)
+
+assert 781200 == RaceWinCalculator.calculate_result(races)
