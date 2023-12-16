@@ -25,12 +25,19 @@ class CardSet:
         self.bid = bid
 
     def get_type(self) -> Type:
-
+        """
+         Where is FULL type ?
+        :return:
+        """
         if self._occurences_of_same_cards_count(5):
             return Type.FIVE
 
         if self._occurences_of_same_cards_count(4):
             return Type.FOUR
+
+        if self._occurences_of_same_cards_count(3, 1) \
+            and self._occurences_of_same_cards_count(2, 1):
+            return Type.FULL
 
         if self._occurences_of_same_cards_count(3):
             return Type.THREE
@@ -61,6 +68,8 @@ assert Type.TWO_PAIR == CardSet('KK677', 765).get_type()
 assert Type.FOUR == CardSet('AA7AA', 765).get_type()
 assert Type.FIVE == CardSet('TTTTT', 765).get_type()
 assert Type.HIGH_CARD == CardSet('23456', 765).get_type()
+assert Type.FOUR == CardSet('22223', 765).get_type()
+assert Type.FULL == CardSet('22333', 765).get_type()
 
 
 class CardSetsComparator:
@@ -122,9 +131,7 @@ expected_order = [
 
 def calculate_result(desk: list) -> int:
     sum = 0
-
     sort_desk = bubble_sort(desk)
-
     for i, card in enumerate(sort_desk):
         sum += card.bid * (i + 1)
 
@@ -138,7 +145,7 @@ data = load_data('input.txt')
 """
 Result to high: 253514144
 """
-#print(len(parse_to_card_desk(data)) == 1000)
+print(len(parse_to_card_desk(data)) == 1000)
 
 
 print(
