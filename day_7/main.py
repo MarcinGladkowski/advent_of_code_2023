@@ -6,10 +6,10 @@ cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
 class Type(Enum):
-    FIVE = 5
-    FOUR = 4
-    FULL = 3
-    THREE = 2
+    FIVE = 6
+    FOUR = 5
+    FULL = 4
+    THREE = 3
     TWO_PAIR = 2
     ONE_PAIR = 1
     HIGH_CARD = 0  # no combinations
@@ -43,14 +43,7 @@ class CardSet:
         return operator.countOf(list(Counter(self.set).values()), occurence_of_combination) == count
 
 
-'''
-32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483
-'''
-cards_desk = [
+test_cards_desk = [
     CardSet('32T3K', 765),
     CardSet('T55J5', 684),
     CardSet('KK677', 28),
@@ -79,7 +72,6 @@ class CardSetsComparator:
             for i in range(5):
                 if set_a.set[i] == set_b.set[i]:
                     continue
-
                 return cards.index(set_a.set[i]) > cards.index(set_b.set[i])
 
         return set_a.get_type().value > set_b.get_type().value
@@ -87,3 +79,37 @@ class CardSetsComparator:
 
 assert CardSetsComparator.compare(CardSet('TTTTT', 765), CardSet('32T3K', 765))
 assert CardSetsComparator.compare(CardSet('KK677', 765), CardSet('KTJJT', 765))
+assert CardSetsComparator.compare(CardSet('T55J5', 765), CardSet('KK677', 765))
+
+
+def bubble_sort(array):
+    n = len(array)
+
+    for i in range(n):
+        already_sorted = True
+        for j in range(n - i - 1):
+
+            print(f"Result of {CardSetsComparator.compare(array[j], array[j + 1])} | {array[j].set} and {array[j+1].set}")
+
+            if CardSetsComparator.compare(array[j], array[j + 1]):
+                array[j], array[j + 1] = array[j + 1], array[j]
+                already_sorted = False
+        if already_sorted:
+            break
+
+    return array
+
+
+bubble_sort(test_cards_desk)
+
+for sorted_card in test_cards_desk:
+    print(sorted_card.set)
+
+expected_order = [
+    CardSet('QQQJA', 483),
+    CardSet('T55J5', 684),
+    CardSet('KK677', 28),
+    CardSet('KTJJT', 220),
+    CardSet('32T3K', 765),
+]
+
