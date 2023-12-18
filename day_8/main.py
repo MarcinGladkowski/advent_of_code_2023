@@ -6,7 +6,7 @@ class InstructionType(str, Enum):
     RIGHT = 'R'
 
 
-instructions = 'RL'
+
 
 '''
 AAA = (BBB, CCC)
@@ -49,8 +49,7 @@ class NetworkRunner:
         if instruction == instruction.RIGHT:
             return point[1]
 
-    def reach_end_point(self, instructions: str, key: str = 'AAA') -> int:
-        steps = 0
+    def reach_end_point(self, instructions: str, key: str = 'AAA', steps: int = 0) -> int:
 
         for instruction in instructions:
             steps += 1
@@ -61,9 +60,21 @@ class NetworkRunner:
 
             key = point
 
+            if instructions[-1] == instruction:
+                return self.reach_end_point(instructions, key, steps)
+
 
 networkRunner = NetworkRunner(network)
 
 assert ['BBB', 'CCC'] == networkRunner.get_point_name_by_code('AAA')
 assert 'CCC' == networkRunner.get_point('AAA', InstructionType.RIGHT)
-assert 2 == networkRunner.reach_end_point(instructions)
+assert 2 == networkRunner.reach_end_point('RL')
+
+network_with_repeat = {
+    'AAA': ['BBB', 'BBB'],
+    'BBB': ['AAA', 'ZZZ'],
+    'ZZZ': ['ZZZ', 'ZZZ'],
+}
+
+assert 6 == NetworkRunner(network_with_repeat).reach_end_point('LLR')
+
