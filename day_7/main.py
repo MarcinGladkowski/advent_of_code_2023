@@ -22,11 +22,15 @@ class Type(Enum):
 class CardSet:
     def __init__(self, set: str, bid: int):
         self.set = set
+        self.jocker_usage = None
         self.bid = bid
 
     def get_with_jocker_type(self):
 
         unique = set(filter(lambda x: x != 'J', list(self.set)))
+
+        if len(set(unique)) == 0:
+            return self.get_type()
 
         highest_solution = Type.HIGH_CARD
         for unique_sign in unique:
@@ -36,6 +40,8 @@ class CardSet:
 
             if candidate.value > highest_solution.value:
                 highest_solution = candidate
+                self.jocker_usage = self.set.replace('J', unique_sign)
+
 
         return self.get_type() if highest_solution is None else highest_solution
 
@@ -170,9 +176,9 @@ expected_order = [
 def calculate_result(comparator, desk: list) -> int:
     sum = 0
     sort_desk = bubble_sort(comparator, desk)
+
     for i, card in enumerate(sort_desk):
         sum += card.bid * (i + 1)
-
     return sum
 
 
@@ -182,6 +188,10 @@ assert 5905 == calculate_result(JockerCardSetsComparator, parse_to_card_desk(tes
 data = load_data('input.txt')
 assert len(parse_to_card_desk(data)) == 1000
 
-# assert 253313241 == calculate_result(parse_to_card_desk(data))
+assert 253313241 == calculate_result(parse_to_card_desk(data))
 
 assert Type.FOUR == CardSet('QJJQ2', 100).get_with_jocker_type()
+assert JockerCardSetsComparator.compare(CardSet('QQQJA', 765), CardSet('T55J5', 765))
+assert JockerCardSetsComparator.compare(CardSet('QQQQ2', 765), CardSet('JKKK2', 765))
+
+assert 253362743 == calculate_result(JockerCardSetsComparator, parse_to_card_desk(data))
