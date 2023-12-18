@@ -142,12 +142,6 @@ assert 6440 == calculate_result(parse_to_card_desk(test_data))
 
 
 data = load_data('input.txt')
-"""
-Result to high: 253514144
-"""
 print(len(parse_to_card_desk(data)) == 1000)
 
-
-print(
-    calculate_result(parse_to_card_desk(data))
-)
+assert 253313241 == calculate_result(parse_to_card_desk(data))
