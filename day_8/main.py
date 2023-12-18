@@ -1,22 +1,13 @@
+import re
 from enum import Enum
+
+from shared.main import load_data
 
 
 class InstructionType(str, Enum):
     LEFT = 'L'
     RIGHT = 'R'
 
-
-
-
-'''
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)
-'''
 
 network = {
     'AAA': ['BBB', 'CCC'],
@@ -51,7 +42,7 @@ class NetworkRunner:
 
     def reach_end_point(self, instructions: str, key: str = 'AAA', steps: int = 0) -> int:
 
-        for instruction in instructions:
+        for i, instruction in enumerate(instructions):
             steps += 1
             point = self.get_point(key, InstructionType(instruction))
 
@@ -60,7 +51,7 @@ class NetworkRunner:
 
             key = point
 
-            if instructions[-1] == instruction:
+            if i == len(instructions) - 1:
                 return self.reach_end_point(instructions, key, steps)
 
 
@@ -78,3 +69,27 @@ network_with_repeat = {
 
 assert 6 == NetworkRunner(network_with_repeat).reach_end_point('LLR')
 
+def parse_data(data: list):
+    points = {}
+    instructions = ''
+    for i, line in enumerate(data):
+        if i == 0:
+            instructions = line
+            continue
+
+        if line == '':
+            continue
+
+        point_key, values = line.split('=')
+        points[point_key.strip()] = re.sub("\s|(\()|(\))", "", values).split(',')
+
+    return instructions, points
+
+
+instructions, points = parse_data(load_data('input.txt'))
+
+part_one = NetworkRunner(points)
+result = part_one.reach_end_point(instructions)
+
+
+print(result)
