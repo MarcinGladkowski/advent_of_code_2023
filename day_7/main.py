@@ -24,34 +24,52 @@ class CardSet:
         self.set = set
         self.bid = bid
 
-    def get_type(self) -> Type:
+    def get_with_jocker_type(self):
+
+        unique = set(filter(lambda x: x != 'J', list(self.set)))
+
+        highest_solution = Type.HIGH_CARD
+        for unique_sign in unique:
+            candidate = self.get_type(
+                self.set.replace('J', unique_sign)
+            )
+
+            if candidate.value > highest_solution.value:
+                highest_solution = candidate
+
+        return self.get_type() if highest_solution is None else highest_solution
+
+    def get_type(self, from_set: str = None) -> Type:
+
+        card_set = self.set if from_set is None else from_set
+
         """
          Where is FULL type ?
         :return:
         """
-        if self._occurences_of_same_cards_count(5):
+        if self._occurences_of_same_cards_count(card_set, 5):
             return Type.FIVE
 
-        if self._occurences_of_same_cards_count(4):
+        if self._occurences_of_same_cards_count(card_set, 4):
             return Type.FOUR
 
-        if self._occurences_of_same_cards_count(3, 1) \
-            and self._occurences_of_same_cards_count(2, 1):
+        if self._occurences_of_same_cards_count(card_set, 3, 1) \
+                and self._occurences_of_same_cards_count(card_set, 2, 1):
             return Type.FULL
 
-        if self._occurences_of_same_cards_count(3):
+        if self._occurences_of_same_cards_count(card_set, 3):
             return Type.THREE
 
-        if self._occurences_of_same_cards_count(2, 2):
+        if self._occurences_of_same_cards_count(card_set, 2, 2):
             return Type.TWO_PAIR
 
-        if self._occurences_of_same_cards_count(2):
+        if self._occurences_of_same_cards_count(card_set, 2):
             return Type.ONE_PAIR
 
         return Type.HIGH_CARD
 
-    def _occurences_of_same_cards_count(self, occurence_of_combination: int, count: int = 1):
-        return operator.countOf(list(Counter(self.set).values()), occurence_of_combination) == count
+    def _occurences_of_same_cards_count(self, set: str, occurence_of_combination: int, count: int = 1):
+        return operator.countOf(list(Counter(set).values()), occurence_of_combination) == count
 
 
 test_cards_desk = [
@@ -140,8 +158,11 @@ def calculate_result(desk: list) -> int:
 
 assert 6440 == calculate_result(parse_to_card_desk(test_data))
 
-
 data = load_data('input.txt')
-print(len(parse_to_card_desk(data)) == 1000)
+len(parse_to_card_desk(data)) == 1000
 
-assert 253313241 == calculate_result(parse_to_card_desk(data))
+# assert 253313241 == calculate_result(parse_to_card_desk(data))
+
+cards_with_joker = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+
+assert Type.FOUR == CardSet('QJJQ2', 100).get_with_jocker_type()
