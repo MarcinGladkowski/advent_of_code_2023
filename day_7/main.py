@@ -108,6 +108,26 @@ class CardSetsComparator:
         return set_a.get_type().value > set_b.get_type().value
 
 
+cards_with_joker = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+
+class JockerCardSetsComparator:
+    @staticmethod
+    def compare(set_a: CardSet, set_b: CardSet):
+        """
+            Is the set_a > than set_b
+            The same set - compare cards one by one
+            Not the same - compare Type
+        """
+        if set_a.get_with_jocker_type() == set_b.get_with_jocker_type():
+            """Compare cards"""
+            for i in range(5):
+                if set_a.set[i] == set_b.set[i]:
+                    continue
+                return cards_with_joker.index(set_a.set[i]) > cards_with_joker.index(set_b.set[i])
+
+        return set_a.get_with_jocker_type().value > set_b.get_with_jocker_type().value
+
+
 assert CardSetsComparator.compare(CardSet('TTTTT', 765), CardSet('32T3K', 765))
 assert CardSetsComparator.compare(CardSet('KK677', 765), CardSet('KTJJT', 765))
 assert CardSetsComparator.compare(CardSet('T55J5', 765), CardSet('KK677', 765))
@@ -121,13 +141,13 @@ def parse_to_card_desk(data: list) -> list:
     return desk
 
 
-def bubble_sort(array):
+def bubble_sort(comparator, array):
     n = len(array)
 
     for i in range(n):
         already_sorted = True
         for j in range(n - i - 1):
-            if CardSetsComparator.compare(array[j], array[j + 1]):
+            if comparator.compare(array[j], array[j + 1]):
                 array[j], array[j + 1] = array[j + 1], array[j]
                 already_sorted = False
         if already_sorted:
@@ -136,7 +156,7 @@ def bubble_sort(array):
     return array
 
 
-sorted_test_cards_desk = bubble_sort(test_cards_desk)
+sorted_test_cards_desk = bubble_sort(CardSetsComparator, test_cards_desk)
 
 expected_order = [
     CardSet('QQQJA', 483),
@@ -147,22 +167,21 @@ expected_order = [
 ]
 
 
-def calculate_result(desk: list) -> int:
+def calculate_result(comparator, desk: list) -> int:
     sum = 0
-    sort_desk = bubble_sort(desk)
+    sort_desk = bubble_sort(comparator, desk)
     for i, card in enumerate(sort_desk):
         sum += card.bid * (i + 1)
 
     return sum
 
 
-assert 6440 == calculate_result(parse_to_card_desk(test_data))
+assert 6440 == calculate_result(CardSetsComparator, parse_to_card_desk(test_data))
+assert 5905 == calculate_result(JockerCardSetsComparator, parse_to_card_desk(test_data))
 
 data = load_data('input.txt')
-len(parse_to_card_desk(data)) == 1000
+assert len(parse_to_card_desk(data)) == 1000
 
 # assert 253313241 == calculate_result(parse_to_card_desk(data))
-
-cards_with_joker = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 assert Type.FOUR == CardSet('QJJQ2', 100).get_with_jocker_type()
