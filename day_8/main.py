@@ -23,7 +23,6 @@ network = {
 class NetworkRunner:
     def __init__(self, network: dict) -> None:
         self.network = network
-        self.simultaneously_finished = 0
 
     def get_point(self, code: str, instruction_type: InstructionType) -> str:
 
@@ -34,28 +33,31 @@ class NetworkRunner:
     def get_point_name_by_code(self, code: str) -> list:
         return self.network[code]
 
-    def get_side_point_name(self, point: list, instruction: InstructionType) -> str:
-        if instruction == InstructionType.LEFT:
-            return point[0]
-
-        if instruction == instruction.RIGHT:
-            return point[1]
-
-    def reach_end_point(self, instructions: str, key: str = 'AAA', steps: int = 0,
-                        end_point: callable = lambda x: x == 'ZZZ') -> int:
+    def reach_end_point(
+            self,
+            instructions: str,
+            key: str = 'AAA',
+            steps: int = 0,
+            end_point: callable = lambda x: x == 'ZZZ',
+    ) -> int | None:
 
         for i, instruction in enumerate(instructions):
             steps += 1
             point = self.get_point(key, InstructionType(instruction))
 
             if end_point(point):
-                print(f"Finished at {point}")
                 return steps
 
             key = point
 
-            if i == len(instructions) - 1:
-                return self.reach_end_point(instructions, key, steps, end_point)
+        return None
+
+    def get_side_point_name(self, point: list, instruction: InstructionType) -> str:
+        if instruction == InstructionType.LEFT:
+            return point[0]
+
+        if instruction == instruction.RIGHT:
+            return point[1]
 
     def simultaneously_start(self, instructions: str):
         """
@@ -65,13 +67,17 @@ class NetworkRunner:
         starting_points = list(filter(lambda x: x.endswith('A'), self.network.keys()))
         result = 0
 
-        print(starting_points)
+        for i, start_point in enumerate(starting_points):
+            point_result = self.reach_end_point(
+                instructions,
+                start_point,
+                0,
+                lambda x: x.endswith('Z'),
+            )
 
-        for start_point in starting_points:
-            point_result = self.reach_end_point(instructions, start_point, 0, lambda x: x.endswith('Z'))
-            print(point_result)
-            result += point_result
-
+            print(f"For starting point {start_point} result is {point_result}")
+            if point_result is not None:
+                result += point_result
 
         return result
 
@@ -87,6 +93,7 @@ network_with_repeat = {
     'BBB': ['AAA', 'ZZZ'],
     'ZZZ': ['ZZZ', 'ZZZ'],
 }
+
 
 # assert 6 == NetworkRunner(network_with_repeat).reach_end_point('LLR')
 
