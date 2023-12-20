@@ -4,8 +4,6 @@ test_input = [
     10, 13, 16, 21, 30, 45,
 ]
 
-not_consecutive_differ_row = [1, 3, 6, 10, 15, 21]
-
 
 def get_next_row(row: list) -> list:
     """
@@ -18,7 +16,7 @@ def get_next_row(row: list) -> list:
         new_row.append(row[i + 1] - row[i])
 
 
-assert [2, 3, 4, 5, 6] == get_next_row(not_consecutive_differ_row)
+assert [2, 3, 4, 5, 6] == get_next_row([1, 3, 6, 10, 15, 21])
 assert [0, 0] == get_next_row([1, 1, 1])
 
 
@@ -114,3 +112,20 @@ assert extrapolate_map(
            [2, 2, 2, 2],
            [0, 0, 0]
        ]
+
+
+def calculate(data: list) -> int:
+    result = 0
+    for row in data:
+        row_map = generate_rows(row)
+        extrapolated_map = extrapolate_map(row_map)
+        result += extrapolated_map[0][-1]  # last element top row
+
+    return result
+
+
+assert 114 == calculate([
+    [0, 3, 6, 9, 12, 15],
+    [1, 3, 6, 10, 15, 21],
+    [10, 13, 16, 21, 30, 45],
+])
