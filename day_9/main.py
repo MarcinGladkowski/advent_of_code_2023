@@ -1,9 +1,10 @@
+from shared.main import load_data
+
 test_input = [
     0, 3, 6, 9, 12, 15,
     1, 3, 6, 10, 15, 21,
     10, 13, 16, 21, 30, 45,
 ]
-
 
 def get_next_row(row: list) -> list:
     """
@@ -13,12 +14,18 @@ def get_next_row(row: list) -> list:
     for i, element in enumerate(row):
         if i + 1 == len(row):
             return new_row
-        new_row.append(row[i + 1] - row[i])
+
+        result = abs(row[i + 1] - row[i]) if row[i + 1] > row[i] else 0
+
+        new_row.append(result)
 
 
 assert [2, 3, 4, 5, 6] == get_next_row([1, 3, 6, 10, 15, 21])
 assert [0, 0] == get_next_row([1, 1, 1])
 
+"""Only absolute differences ?"""
+assert [6] == get_next_row([-4, 2]) # 2 - (-4) = 6
+assert [0] == get_next_row([2, -4]) # -4 - 2 = -6
 
 def are_only_zeros(row: list) -> bool:
     return sum(row) == 0
@@ -84,8 +91,10 @@ def extrapolate_map(map: list):
 
         up = map[i - 1]
         bottom = map[i]
-
-        up, bottom = extrapolate(up, bottom)
+        try:
+            up, bottom = extrapolate(up, bottom)
+        except IndexError:
+            print("Index out of range")
 
         map[i - 1] = up
         map[i] = bottom
@@ -119,7 +128,9 @@ def calculate(data: list) -> int:
     for row in data:
         row_map = generate_rows(row)
         extrapolated_map = extrapolate_map(row_map)
-        result += extrapolated_map[0][-1]  # last element top row
+        last_extrapolated_number = extrapolated_map[0][-1]
+        print(last_extrapolated_number)
+        result += last_extrapolated_number  # last element top row
 
     return result
 
@@ -129,3 +140,21 @@ assert 114 == calculate([
     [1, 3, 6, 10, 15, 21],
     [10, 13, 16, 21, 30, 45],
 ])
+
+part_1_data = load_data("input.txt")
+
+
+def parse_to_lists(data: list) -> list:
+    parsed = []
+    for row_part_1 in data:
+        parsed.append(
+            list(map(lambda el: int(el), row_part_1.split(' ')))
+        )
+
+    return parsed
+
+"""
+too low: 1901217886
+too high: 1904764779
+"""
+print(calculate(parse_to_lists(part_1_data)))
