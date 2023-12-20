@@ -73,3 +73,44 @@ assert generate_rows([10, 13, 16, 21, 30, 45]) == [
     [2, 2, 2],
     [0, 0]
 ]
+
+
+def extrapolate_map(map: list):
+    """
+        from bottom to up
+        index 0 = list on top
+    """
+    for i in reversed(range(0, len(map))):
+        if i == 0:
+            return map
+
+        up = map[i - 1]
+        bottom = map[i]
+
+        up, bottom = extrapolate(up, bottom)
+
+        map[i - 1] = up
+        map[i] = bottom
+
+        """line on bottom with zeroes will fill with additional 0"""
+        if i == len(map) - 1:
+            map[len(map) - 1].append(0)
+
+    return map
+
+
+assert extrapolate_map(
+    [
+        [10, 13, 16, 21, 30, 45],
+        [3, 3, 5, 9, 15],
+        [0, 2, 4, 6],
+        [2, 2, 2],
+        [0, 0]
+    ]
+) == [
+           [10, 13, 16, 21, 30, 45, 68],
+           [3, 3, 5, 9, 15, 23],
+           [0, 2, 4, 6, 8],
+           [2, 2, 2, 2],
+           [0, 0, 0]
+       ]
