@@ -200,3 +200,21 @@ row_3 = generate_rows([10, 13, 16, 21, 30, 45]) == [
 ]
 
 assert extrapolate_map_from_begging([[10, 13, 16, 21, 30, 45], [3, 3, 5, 9, 15], [0, 2, 4, 6], [2, 2, 2], [0, 0]]) == [[5, 10, 13, 16, 21, 30, 45],[5, 3, 3, 5, 9, 15],[-2, 0, 2, 4, 6],[2, 2, 2, 2],[0, 0, 0]]
+
+
+def calculate_with_pre_extrapolation(data: list) -> int:
+    result = 0
+    for i, row in enumerate(data):
+        row_map = generate_rows(row)
+        extrapolated_map = extrapolate_map_from_begging(row_map)
+        last_extrapolated_number = extrapolated_map[0][0]
+        result += last_extrapolated_number  # last element top row
+
+    return result
+
+
+assert 2 == calculate_with_pre_extrapolation([
+    [0, 3, 6, 9, 12, 15],
+    [1, 3, 6, 10, 15, 21],
+    [10, 13, 16, 21, 30, 45],
+])
