@@ -15,17 +15,13 @@ def get_next_row(row: list) -> list:
         if i + 1 == len(row):
             return new_row
 
-        result = abs(row[i + 1] - row[i]) if row[i + 1] > row[i] else 0
-
-        new_row.append(result)
+        new_row.append(row[i + 1] - row[i])
 
 
 assert [2, 3, 4, 5, 6] == get_next_row([1, 3, 6, 10, 15, 21])
 assert [0, 0] == get_next_row([1, 1, 1])
 
 """Only absolute differences ?"""
-assert [6] == get_next_row([-4, 2]) # 2 - (-4) = 6
-assert [0] == get_next_row([2, -4]) # -4 - 2 = -6
 
 def are_only_zeros(row: list) -> bool:
     return sum(row) == 0
@@ -140,6 +136,16 @@ assert 114 == calculate([
     [1, 3, 6, 10, 15, 21],
     [10, 13, 16, 21, 30, 45],
 ])
+
+first_rows_generations = generate_rows(
+    [-3, 8, 35, 82, 152, 255, 432, 803, 1648, 3531, 7478, 15221, 29521, 54584, 96585, 164316, 269975, 430114, 666765,
+     1008764, 1493294
+     ])
+
+for row in first_rows_generations:
+    print(row)
+
+exit()
 
 part_1_data = load_data("input.txt")
 
