@@ -95,7 +95,6 @@ def extrapolate_map(map: list):
         map[i] = bottom
 
         if i == len(map) - 1:
-            print(map[len(map) - 1])
             map[len(map) - 1].append(0)
 
     return map
@@ -150,3 +149,54 @@ def parse_to_lists(data: list) -> list:
 part_1_data = parse_to_lists(load_data("input.txt"))
 
 assert 1901217887 == calculate(part_1_data)
+
+"""part 2"""
+
+
+def extrapolate_map_from_begging(generated_map: list) -> list:
+    for i in reversed(range(0, len(generated_map))):
+        if i == 0:
+            return generated_map
+
+        if i == len(generated_map) - 1:
+            """Set zero in front of last row"""
+            generated_map[len(generated_map) - 1].insert(0, 0)
+
+        up = generated_map[i - 1]
+        bottom = generated_map[i]
+
+        up, bottom = extrapolate_first_element(up, bottom)
+
+        generated_map[i - 1] = up
+        generated_map[i] = bottom
+
+    return generated_map
+
+
+def get_extrapolate_for_first_value(bottom: list, up: list):
+    return up[0] - bottom[0]
+
+
+def add_extrapolate_on_first_index(value: int, up: list):
+    up.insert(0, value)
+    return up
+
+
+assert [0, 1, 2, 3] == add_extrapolate_on_first_index(0, [1, 2, 3])
+
+
+def extrapolate_first_element(up: list, bottom: list) -> tuple:
+    value = get_extrapolate_for_first_value(bottom, up)
+    add_extrapolate_on_first_index(value, up)
+    return up, bottom
+
+
+row_3 = generate_rows([10, 13, 16, 21, 30, 45]) == [
+    [10, 13, 16, 21, 30, 45],
+    [3, 3, 5, 9, 15],
+    [0, 2, 4, 6],
+    [2, 2, 2],
+    [0, 0]
+]
+
+assert extrapolate_map_from_begging([[10, 13, 16, 21, 30, 45], [3, 3, 5, 9, 15], [0, 2, 4, 6], [2, 2, 2], [0, 0]]) == [[5, 10, 13, 16, 21, 30, 45],[5, 3, 3, 5, 9, 15],[-2, 0, 2, 4, 6],[2, 2, 2, 2],[0, 0, 0]]
