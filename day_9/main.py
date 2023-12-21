@@ -218,3 +218,7 @@ assert 2 == calculate_with_pre_extrapolation([
     [1, 3, 6, 10, 15, 21],
     [10, 13, 16, 21, 30, 45],
 ])
+
+part_1_data = parse_to_lists(load_data("input.txt"))
+
+assert 905 == calculate_with_pre_extrapolation(part_1_data)
