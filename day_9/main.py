@@ -6,6 +6,7 @@ test_input = [
     10, 13, 16, 21, 30, 45,
 ]
 
+
 def get_next_row(row: list) -> list:
     """
         Return next row with one element less len(row) - 6 return 5
@@ -21,14 +22,14 @@ def get_next_row(row: list) -> list:
 assert [2, 3, 4, 5, 6] == get_next_row([1, 3, 6, 10, 15, 21])
 assert [0, 0] == get_next_row([1, 1, 1])
 
-"""Only absolute differences ?"""
 
 def are_only_zeros(row: list) -> bool:
-    return sum(row) == 0
+    return len(list(filter(lambda x: x == 0, row))) == len(row)
 
 
 assert are_only_zeros([0, 0, 0])
 assert are_only_zeros([0, 0, 1]) == False
+assert are_only_zeros([-1, 0, 1]) == False
 
 
 def get_extrapolate_value(bottom: list, up: list):
@@ -87,16 +88,14 @@ def extrapolate_map(map: list):
 
         up = map[i - 1]
         bottom = map[i]
-        try:
-            up, bottom = extrapolate(up, bottom)
-        except IndexError:
-            print("Index out of range")
+
+        up, bottom = extrapolate(up, bottom)
 
         map[i - 1] = up
         map[i] = bottom
 
-        """line on bottom with zeroes will fill with additional 0"""
         if i == len(map) - 1:
+            print(map[len(map) - 1])
             map[len(map) - 1].append(0)
 
     return map
@@ -121,11 +120,11 @@ assert extrapolate_map(
 
 def calculate(data: list) -> int:
     result = 0
-    for row in data:
+    print(f"\n")
+    for i, row in enumerate(data):
         row_map = generate_rows(row)
         extrapolated_map = extrapolate_map(row_map)
         last_extrapolated_number = extrapolated_map[0][-1]
-        print(last_extrapolated_number)
         result += last_extrapolated_number  # last element top row
 
     return result
@@ -137,18 +136,6 @@ assert 114 == calculate([
     [10, 13, 16, 21, 30, 45],
 ])
 
-first_rows_generations = generate_rows(
-    [-3, 8, 35, 82, 152, 255, 432, 803, 1648, 3531, 7478, 15221, 29521, 54584, 96585, 164316, 269975, 430114, 666765,
-     1008764, 1493294
-     ])
-
-for row in first_rows_generations:
-    print(row)
-
-exit()
-
-part_1_data = load_data("input.txt")
-
 
 def parse_to_lists(data: list) -> list:
     parsed = []
@@ -159,8 +146,7 @@ def parse_to_lists(data: list) -> list:
 
     return parsed
 
-"""
-too low: 1901217886
-too high: 1904764779
-"""
-print(calculate(parse_to_lists(part_1_data)))
+
+part_1_data = parse_to_lists(load_data("input.txt"))
+
+assert 1901217887 == calculate(part_1_data)
