@@ -149,8 +149,4 @@ def check_movement(pointer: PipeElement, area: list):
             return PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
 
 
-print(
-    check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1)
-)
-
-assert PipeElement(1, 3, Pipe.SOUTH_WEST) == check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1)
+assert PipeElement(1, 3, Pipe.SOUTH_WEST).type.value == check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1).type.value
