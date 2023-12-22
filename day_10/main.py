@@ -1,10 +1,6 @@
 from enum import Enum
 
 
-# class Directions(Enum):
-#     NORTH = 'north'
-
-
 class Pipe(Enum):
     NORTH_SOUTH = '|'
     EAST_WEST = '-'
@@ -12,6 +8,18 @@ class Pipe(Enum):
     NORTH_WEST = 'J'
     SOUTH_WEST = '7'
     SOUTH_EAST = 'F'
+
+    @classmethod
+    def is_pipe_element(cls, value):
+        for element in cls:
+            if element.value == value:
+                return cls(value)
+
+        return False
+
+
+assert False == Pipe.is_pipe_element('x')
+assert Pipe.EAST_WEST == Pipe.is_pipe_element('-')
 
 
 class Direction(Enum):
@@ -21,30 +29,33 @@ class Direction(Enum):
     EAST = 'east'
 
 
+STARTING_POINT = 'S'
+GROUND = '.'
+
 pipe_paths_map = {
     Pipe.NORTH_SOUTH: {
-        'north': [Pipe.SOUTH_EAST, Pipe.SOUTH_WEST, Pipe.NORTH_SOUTH],
-        'south': [Pipe.NORTH_EAST, Pipe.NORTH_WEST, Pipe.NORTH_SOUTH]
+        Direction.NORTH: [Pipe.SOUTH_EAST, Pipe.SOUTH_WEST, Pipe.NORTH_SOUTH],
+        Direction.SOUTH: [Pipe.NORTH_EAST, Pipe.NORTH_WEST, Pipe.NORTH_SOUTH]
     },
     Pipe.EAST_WEST: {
-        'west': [Pipe.EAST_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
-        'east': [Pipe.EAST_WEST, Pipe.NORTH_WEST, Pipe.SOUTH_WEST]
+        Direction.WEST: [Pipe.EAST_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
+        Direction.EAST: [Pipe.EAST_WEST, Pipe.NORTH_WEST, Pipe.SOUTH_WEST]
     },
     Pipe.NORTH_EAST: {
-        'north': [Pipe.NORTH_SOUTH, Pipe.SOUTH_WEST, Pipe.SOUTH_EAST],
-        'east': [Pipe.EAST_WEST, Pipe.NORTH_WEST, Pipe.SOUTH_WEST]
+        Direction.NORTH: [Pipe.NORTH_SOUTH, Pipe.SOUTH_WEST, Pipe.SOUTH_EAST],
+        Direction.EAST: [Pipe.EAST_WEST, Pipe.NORTH_WEST, Pipe.SOUTH_WEST]
     },
     Pipe.NORTH_WEST: {
-        'north': [Pipe.NORTH_SOUTH, Pipe.SOUTH_WEST, Pipe.SOUTH_EAST],
-        'west': [Pipe.EAST_WEST, Pipe.NORTH_EAST, Pipe.SOUTH_EAST]
+        Direction.NORTH: [Pipe.NORTH_SOUTH, Pipe.SOUTH_WEST, Pipe.SOUTH_EAST],
+        Direction.WEST: [Pipe.EAST_WEST, Pipe.NORTH_EAST, Pipe.SOUTH_EAST]
     },
     Pipe.SOUTH_WEST: {
-        'south': [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
-        'west': [Pipe.SOUTH_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
+        Direction.SOUTH: [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
+        Direction.WEST: [Pipe.SOUTH_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
     },
     Pipe.SOUTH_EAST: {
-        'south': [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
-        'east': [Pipe.EAST_WEST, Pipe.SOUTH_WEST, Pipe.NORTH_WEST]
+        Direction.SOUTH: [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
+        Direction.EAST: [Pipe.EAST_WEST, Pipe.SOUTH_WEST, Pipe.NORTH_WEST]
     }
 }
 
@@ -66,7 +77,18 @@ class PipeElement:
 
 
 class Path:
-    pass
+
+    def __init__(self):
+        self.path = []
+
+    def next(self, pipe_element: PipeElement) -> None:
+        self.path.append(pipe_element)
+
+    def pointer(self):
+        """
+        Last element in path is a pointer/position
+        """
+        return self.path[-1]
 
 
 '''
@@ -82,14 +104,32 @@ movements = {
 }
 
 
-def get_element_by_direction(point: PipeElement, direction: Direction, area: list):
+def get_element_by_direction(point: PipeElement, direction: Direction, area: list) -> str:
+    """
+    Return element from possible for element direction
+
+    Return
+    """
     return movements[direction](point, area)
 
 
-assert get_element_by_direction(PipeElement(1, 3, Pipe.EAST_WEST), Direction.EAST, test_map_1) == '7'
+assert get_element_by_direction(PipeElement(1, 2, Pipe.EAST_WEST), Direction.EAST, test_map_1) == '7'
+assert get_element_by_direction(PipeElement(3, 3, Pipe.NORTH_WEST), Direction.NORTH, test_map_1) == '|'
+
 
 def get_possible_movements(point: PipeElement) -> dict:
+    """
+        Return dictionary of moves
+    """
     return pipe_paths_map[point.type]
 
+
 def check_movement(pointer: PipeElement, area: list):
+    """
+    We have to check if element meet at movement is legal to move
+    """
     moves = get_possible_movements(pointer)
+
+    for direction_move in moves.keys():
+        meet_element = get_element_by_direction(pointer, direction_move, area)
+        """check if it is a pipe element ?"""
