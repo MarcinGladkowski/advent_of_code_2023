@@ -97,24 +97,26 @@ Check neighbors to choose correct movement or break path.
 Test of element y, x => (1, 2) => '-'
 '''
 movements = {
-    Direction.EAST: lambda element, area: area[element.y][element.x + 1],
-    Direction.WEST: lambda element, area: area[element.y][element.x - 1],
-    Direction.NORTH: lambda element, area: area[element.y - 1][element.x],
-    Direction.SOUTH: lambda element, area: area[element.y + 1][element.x],
+    Direction.EAST: lambda element, area: (area[element.y][element.x + 1], element.y, element.x+1),
+    Direction.WEST: lambda element, area: (area[element.y][element.x - 1], element.y, element.x - 1),
+    Direction.NORTH: lambda element, area: (area[element.y - 1][element.x], element.y - 1, element.x),
+    Direction.SOUTH: lambda element, area: (area[element.y + 1][element.x], element.y + 1, element.x),
 }
 
 
-def get_element_by_direction(point: PipeElement, direction: Direction, area: list) -> str:
+def get_element_by_direction(point: PipeElement, direction: Direction, area: list) -> tuple:
     """
     Return element from possible for element direction
 
-    Return
+    Return element, y, x of this new element
+
+    Check INDEX OUT OF RANGE Error
     """
     return movements[direction](point, area)
 
 
-assert get_element_by_direction(PipeElement(1, 2, Pipe.EAST_WEST), Direction.EAST, test_map_1) == '7'
-assert get_element_by_direction(PipeElement(3, 3, Pipe.NORTH_WEST), Direction.NORTH, test_map_1) == '|'
+assert get_element_by_direction(PipeElement(1, 2, Pipe.EAST_WEST), Direction.EAST, test_map_1) == ('7', 1, 3)
+assert get_element_by_direction(PipeElement(3, 3, Pipe.NORTH_WEST), Direction.NORTH, test_map_1) == ('|', 2, 3)
 
 
 def get_possible_movements(point: PipeElement) -> dict:
@@ -132,4 +134,11 @@ def check_movement(pointer: PipeElement, area: list):
 
     for direction_move in moves.keys():
         meet_element = get_element_by_direction(pointer, direction_move, area)
+
         """check if it is a pipe element ?"""
+        if Pipe.is_pipe_element(meet_element):
+            """Check is it legal to move on this position"""
+
+
+            """add point to parth and go on!"""
+
