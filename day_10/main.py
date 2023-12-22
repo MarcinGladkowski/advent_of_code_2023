@@ -75,6 +75,10 @@ class PipeElement:
         self.y = y
         self.x = x
 
+    def __str__(self):
+        return f"Position {self.y} - {self.x} | {self.type.value}"
+
+
 
 class Path:
 
@@ -97,7 +101,7 @@ Check neighbors to choose correct movement or break path.
 Test of element y, x => (1, 2) => '-'
 '''
 movements = {
-    Direction.EAST: lambda element, area: (area[element.y][element.x + 1], element.y, element.x+1),
+    Direction.EAST: lambda element, area: (area[element.y][element.x + 1], element.y, element.x + 1),
     Direction.WEST: lambda element, area: (area[element.y][element.x - 1], element.y, element.x - 1),
     Direction.NORTH: lambda element, area: (area[element.y - 1][element.x], element.y - 1, element.x),
     Direction.SOUTH: lambda element, area: (area[element.y + 1][element.x], element.y + 1, element.x),
@@ -128,17 +132,25 @@ def get_possible_movements(point: PipeElement) -> dict:
 
 def check_movement(pointer: PipeElement, area: list):
     """
-    We have to check if element meet at movement is legal to move
+    We have to check if element meet at movement is legal to move and return new Point to Path if it's valid
     """
     moves = get_possible_movements(pointer)
 
-    for direction_move in moves.keys():
-        meet_element = get_element_by_direction(pointer, direction_move, area)
+    for direction_move, direction_move_possibilities in moves.items():
+        meet_element, meet_element_y, meet_element_x = get_element_by_direction(pointer, direction_move, area)
 
-        """check if it is a pipe element ?"""
-        if Pipe.is_pipe_element(meet_element):
-            """Check is it legal to move on this position"""
+        """Omit checking on start by remember to find ending of path loop"""
+        if meet_element == STARTING_POINT or meet_element == GROUND:
+            continue
+
+        next_possible_pipe_element = Pipe(meet_element)
+
+        if next_possible_pipe_element in direction_move_possibilities:
+            return PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
 
 
-            """add point to parth and go on!"""
+print(
+    check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1)
+)
 
+assert PipeElement(1, 3, Pipe.SOUTH_WEST) == check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1)
