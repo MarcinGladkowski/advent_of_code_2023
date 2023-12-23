@@ -8,6 +8,12 @@ class Pipe(Enum):
     NORTH_WEST = 'J'
     SOUTH_WEST = '7'
     SOUTH_EAST = 'F'
+    STARTING_POINT = 'S'
+    GROUND = '.'
+
+    @classmethod
+    def is_starting_point(cls):
+        return cls.value == cls.STARTING_POINT
 
     @classmethod
     def is_pipe_element(cls, value):
@@ -29,8 +35,6 @@ class Direction(Enum):
     EAST = 'east'
 
 
-STARTING_POINT = 'S'
-GROUND = '.'
 
 pipe_paths_map = {
     Pipe.NORTH_SOUTH: {
@@ -75,10 +79,15 @@ class PipeElement:
         self.y = y
         self.x = x
 
+    def __eq__(self, other):
+        return (self.y, self.x, self.type.value) == (other.y, other.x, other.type.value)
+
     def __str__(self):
         return f"Position {self.y} - {self.x} | {self.type.value}"
 
 
+
+assert PipeElement(1, 1, Pipe.NORTH_WEST) == PipeElement(1, 1, Pipe.NORTH_WEST)
 
 class Path:
 
@@ -93,6 +102,18 @@ class Path:
         Last element in path is a pointer/position
         """
         return self.path[-1]
+
+    def previous(self):
+        if len(self.path) == 1:
+            return None
+
+        return self.path[-2]
+
+
+    def has(self, pipe_element: PipeElement):
+        for el in self.path:
+            raise NotImplemented
+
 
 
 '''
@@ -130,23 +151,31 @@ def get_possible_movements(point: PipeElement) -> dict:
     return pipe_paths_map[point.type]
 
 
-def check_movement(pointer: PipeElement, area: list):
+def check_movement(path: Path, area: list):
     """
     We have to check if element meet at movement is legal to move and return new Point to Path if it's valid
     """
+    pointer = path.pointer()
+    previous = path.previous()
+
     moves = get_possible_movements(pointer)
 
+    """
+        There is a situation when two directions are possible to move
+        One directions was used by previous position
+    """
     for direction_move, direction_move_possibilities in moves.items():
         meet_element, meet_element_y, meet_element_x = get_element_by_direction(pointer, direction_move, area)
 
-        """Omit checking on start by remember to find ending of path loop"""
-        if meet_element == STARTING_POINT or meet_element == GROUND:
-            continue
-
         next_possible_pipe_element = Pipe(meet_element)
+
+        """Omit checking on start by remember to find ending of path loop"""
+        if previous.type.is_starting_point():
+            continue
 
         if next_possible_pipe_element in direction_move_possibilities:
             return PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
 
 
-assert PipeElement(1, 3, Pipe.SOUTH_WEST).type.value == check_movement(PipeElement(1, 2, Pipe.EAST_WEST), test_map_1).type.value
+assert PipeElement(1, 3, Pipe.SOUTH_WEST).type.value == check_movement(PipeElement(1, 2, Pipe.EAST_WEST),
+                                                                       test_map_1).type.value
