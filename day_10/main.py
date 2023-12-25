@@ -11,9 +11,8 @@ class Pipe(Enum):
     STARTING_POINT = 'S'
     GROUND = '.'
 
-    @classmethod
-    def is_starting_point(cls):
-        return cls.value == cls.STARTING_POINT
+    def is_starting_point(self):
+        return self.value == Pipe.STARTING_POINT.value
 
     @classmethod
     def is_pipe_element(cls, value):
@@ -33,7 +32,6 @@ class Direction(Enum):
     SOUTH = 'south'
     WEST = 'west'
     EAST = 'east'
-
 
 
 pipe_paths_map = {
@@ -86,33 +84,42 @@ class PipeElement:
         return f"Position {self.y} - {self.x} | {self.type.value}"
 
 
-
 assert PipeElement(1, 1, Pipe.NORTH_WEST) == PipeElement(1, 1, Pipe.NORTH_WEST)
+
 
 class Path:
 
-    def __init__(self):
-        self.path = []
+    def __init__(self, pipe_elements: list = None):
+        self.pipe_elements = [] if pipe_elements is None else pipe_elements
+
+    def add(self, pipe_element: PipeElement):
+        self.pipe_elements.append(pipe_element)
 
     def next(self, pipe_element: PipeElement) -> None:
-        self.path.append(pipe_element)
+        self.pipe_elements.append(pipe_element)
 
     def pointer(self):
         """
         Last element in path is a pointer/position
         """
-        return self.path[-1]
+        return self.pipe_elements[-1]
+
+    def has_previous(self) -> bool:
+        return len(self.pipe_elements) > 1
 
     def previous(self):
-        if len(self.path) == 1:
+        if len(self.pipe_elements) == 1:
             return None
 
-        return self.path[-2]
-
+        return self.pipe_elements[-2]
 
     def has(self, pipe_element: PipeElement):
-        for el in self.path:
-            raise NotImplemented
+        for el in self.pipe_elements:
+            if el == pipe_element:
+                return True
+
+        return False
+
 
 
 
@@ -151,7 +158,7 @@ def get_possible_movements(point: PipeElement) -> dict:
     return pipe_paths_map[point.type]
 
 
-def check_movement(path: Path, area: list):
+def check_movement(path: Path, area: list) -> Path:
     """
     We have to check if element meet at movement is legal to move and return new Point to Path if it's valid
     """
@@ -170,12 +177,23 @@ def check_movement(path: Path, area: list):
         next_possible_pipe_element = Pipe(meet_element)
 
         """Omit checking on start by remember to find ending of path loop"""
-        if previous.type.is_starting_point():
+        if path.has_previous() and previous.type.is_starting_point():
             continue
 
+        """Previous is in path and was parsed"""
+        if path.has(PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)):
+            continue
+
+        if path.has_previous() and next_possible_pipe_element.is_starting_point():
+            return path
+
         if next_possible_pipe_element in direction_move_possibilities:
-            return PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
+            path.add(
+                PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
+            )
+
+            return check_movement(path, area)
 
 
-assert PipeElement(1, 3, Pipe.SOUTH_WEST).type.value == check_movement(PipeElement(1, 2, Pipe.EAST_WEST),
-                                                                       test_map_1).type.value
+"Do I need add start and finish point - simple parsing example data"
+assert 7 == len(check_movement(Path([PipeElement(1, 2, Pipe.EAST_WEST)]), test_map_1).pipe_elements)
