@@ -158,7 +158,7 @@ def get_possible_movements(point: PipeElement) -> dict:
     return pipe_paths_map[point.type]
 
 
-def check_movement(path: Path, area: list) -> Path:
+def move(path: Path, area: list) -> Path:
     """
     We have to check if element meet at movement is legal to move and return new Point to Path if it's valid
     """
@@ -192,8 +192,41 @@ def check_movement(path: Path, area: list) -> Path:
                 PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
             )
 
-            return check_movement(path, area)
+            return move(path, area)
 
 
-"Do I need add start and finish point - simple parsing example data"
-assert 7 == len(check_movement(Path([PipeElement(1, 2, Pipe.EAST_WEST)]), test_map_1).pipe_elements)
+"""
+    Do I need add start and finish point - simple parsing example data
+    
+    To count result of the path I need add starting point. In this example 7 + 1
+"""
+assert 7 == len(move(Path([PipeElement(1, 2, Pipe.EAST_WEST)]), test_map_1).pipe_elements)
+
+test_map_2 = [
+    ['7', '-', 'F', '7', '-'],
+    ['.', 'F', 'J', '|', '7'],
+    ['S', 'J', 'L', 'L', '7'],
+    ['|', 'F', '-', '-', 'J'],
+    ['L', 'J', '.', 'L', 'J']
+]
+
+"""
+Start all move from points around starting point (S)
+"""
+correct_path_test_map_2 = move(Path([PipeElement(2, 1, Pipe.NORTH_WEST)]), test_map_2)
+
+print(len(correct_path_test_map_2.pipe_elements))
+
+from shared.main import load_data
+
+data_part_1 = load_data('input.txt')
+
+parsed_map = []
+for index, row in enumerate(data_part_1):
+    line_parsed = []
+    for el in row:
+        line_parsed.append(el)
+    parsed_map.append(line_parsed)
+
+
+print(parsed_map)
