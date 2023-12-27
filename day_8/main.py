@@ -1,5 +1,4 @@
 import re
-import sys
 from enum import Enum
 
 from shared.main import load_data
@@ -19,6 +18,24 @@ network = {
     'GGG': ['GGG', 'GGG'],
     'ZZZ': ['ZZZ', 'ZZZ']
 }
+
+
+def parse_data(data: list):
+    """Prepare data loaded from file"""
+    points = {}
+    instructions = ''
+    for i, line in enumerate(data):
+        if i == 0:
+            instructions = line
+            continue
+
+        if line == '':
+            continue
+
+        point_key, values = line.split('=')
+        points[point_key.strip()] = re.sub("\s|(\()|(\))", "", values).split(',')
+
+    return instructions, points
 
 
 class Node:
@@ -54,30 +71,19 @@ class NetworkRunner:
     def get_point_name_by_code(self, code: str) -> list:
         return self.network[code]
 
-    def reach_end_point(
-            self,
-            found: list,
-            instructions: str,
-            key: str = 'AAA',
-            steps: int = 0,
-            end_point: callable = lambda x: x.endswith('Z'),
-    ) -> list:
-
-        if steps > 99_999_999:
-            return found
+    def reach_end_point(self, instructions: str, key: str = 'AAA', steps: int = 0) -> int:
 
         for i, instruction in enumerate(instructions):
             steps += 1
             point = self.get_point(key, InstructionType(instruction))
 
-            if end_point(point):
-                found.append(steps)
-                #return steps
+            if point == 'ZZZ':
+                return steps
 
             key = point
 
             if i == len(instructions) - 1:
-                return self.reach_end_point(instructions=instructions, key=key, steps=steps, end_point=end_point, found=found)
+                return self.reach_end_point(instructions, key, steps)
 
     def get_side_point_name(self, point: list, instruction: InstructionType) -> str:
         if instruction == InstructionType.LEFT:
@@ -89,66 +95,12 @@ class NetworkRunner:
     def get_start_points(self):
         return list(filter(lambda x: x.endswith('A'), self.network.keys()))
 
-    def simultaneously_start(self, instructions: str):
-        """
-        Execute in loop for elements ending with A
-        Ending on elements ending with Z
-        """
-        start_points = list(filter(lambda x: x.endswith('A'), self.network.keys()))
-
-        nodes = []
-        for i, start_point in enumerate(start_points):
-            nodes.append(Node(i, start_point, start_point, 0, False))
-
-        result = self.recursion_nodes(nodes, instructions)
-
-        return result
-
-    def recursion_nodes(self, nodes, instructions, result=0):
-
-        for instruction in instructions:
-            nodes = self.reach_points_on_single_instruction(nodes, InstructionType(instruction))
-
-            self.log_nodes(nodes)
-
-            if self.all_nodes_finished(nodes):
-                return nodes[0].iterator
-
-            result += 1
-            self.reset_nodes(nodes)
-
-        return self.recursion_nodes(nodes, instructions, result)
-
-    def reach_points_on_single_instruction(self, nodes, instruction: InstructionType):
-
-        for node in nodes:
-            found_point = self.get_point(node.current_point, InstructionType(instruction))
-            node.next(found_point)
-
-        return nodes
-
-    def all_nodes_finished(self, nodes: list) -> bool:
-        return len(list(filter(lambda node: node.has_finished, nodes))) == len(nodes)
-
-    def all_nodes_count(self, nodes) -> int:
-        return sum(list(map(lambda node: node.iterator, nodes)))
-
-    def reset_nodes(self, nodes):
-        for node in nodes:
-            node.reset()
-
-    def log_nodes(self, nodes):
-        finished = len(list(filter(lambda node: node.has_finished, nodes)))
-
-        if finished > 5:
-            print(f"Finished {finished} out of {len(nodes)} at iteration {nodes[0].iterator}")
-
 
 networkRunner = NetworkRunner(network)
 
-# assert ['BBB', 'CCC'] == networkRunner.get_point_name_by_code('AAA')
-# assert 'CCC' == networkRunner.get_point('AAA', InstructionType.RIGHT)
-# assert 2 == networkRunner.reach_end_point('RL')
+assert ['BBB', 'CCC'] == networkRunner.get_point_name_by_code('AAA')
+assert 'CCC' == networkRunner.get_point('AAA', InstructionType.RIGHT)
+assert 2 == networkRunner.reach_end_point('RL')
 
 network_with_repeat = {
     'AAA': ['BBB', 'BBB'],
@@ -156,55 +108,11 @@ network_with_repeat = {
     'ZZZ': ['ZZZ', 'ZZZ'],
 }
 
-# assert 6 == NetworkRunner(network_with_repeat).reach_end_point('LLR')
+assert 6 == NetworkRunner(network_with_repeat).reach_end_point('LLR')
 
 
-def parse_data(data: list):
-    points = {}
-    instructions = ''
-    for i, line in enumerate(data):
-        if i == 0:
-            instructions = line
-            continue
-
-        if line == '':
-            continue
-
-        point_key, values = line.split('=')
-        points[point_key.strip()] = re.sub("\s|(\()|(\))", "", values).split(',')
-
-    return instructions, points
-
-
-# instructions, points = parse_data(load_data('input.txt'))
-#
-# part_one = NetworkRunner(points)
-# assert 17621 == part_one.reach_end_point(instructions)
-#
-# instructions, points = parse_data(load_data('test_input.txt'))
-
-# part_two = NetworkRunner(points)
-# assert 6 == part_two.simultaneously_start(instructions)
-
-"""
-104674 too low
-124662 (20777*6)
-"""
-
-
-sys.setrecursionlimit(100_000_000)
-# 
 instructions, points = parse_data(load_data('input.txt'))
 
-start_points = NetworkRunner(points).get_start_points()
+part_one = NetworkRunner(points)
+assert 17621 == part_one.reach_end_point(instructions)
 
-print(start_points)
-
-founded = []
-for start_point in start_points:
-    elements = NetworkRunner(points).reach_end_point(instructions=instructions, key=start_point, found=[])
-    print(len(elements))
-    founded.append(elements)
-
-
-print(list(set(founded[0]) & set(founded[1]) & set(founded[2]) & set(founded[3]) & set(founded[4])))
