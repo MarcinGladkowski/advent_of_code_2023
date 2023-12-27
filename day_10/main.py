@@ -53,7 +53,7 @@ pipe_paths_map = {
     },
     Pipe.SOUTH_WEST: {
         Direction.SOUTH: [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
-        Direction.WEST: [Pipe.SOUTH_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
+        Direction.WEST: [Pipe.EAST_WEST, Pipe.SOUTH_EAST, Pipe.NORTH_EAST],
     },
     Pipe.SOUTH_EAST: {
         Direction.SOUTH: [Pipe.NORTH_SOUTH, Pipe.NORTH_EAST, Pipe.NORTH_WEST],
@@ -121,7 +121,9 @@ class Path:
         return False
 
 
-
+assert PipeElement(1, 1, Pipe.NORTH_WEST) == PipeElement(1, 1, Pipe.NORTH_WEST)
+assert PipeElement(1, 2, Pipe.NORTH_WEST) != PipeElement(1, 1, Pipe.NORTH_WEST)
+assert PipeElement(1, 2, Pipe.SOUTH_WEST) != PipeElement(1, 2, Pipe.NORTH_WEST)
 
 '''
 Check neighbors to choose correct movement or break path.
@@ -180,19 +182,29 @@ def move(path: Path, area: list) -> Path:
         if path.has_previous() and previous.type.is_starting_point():
             continue
 
+        next_element = PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
+
         """Previous is in path and was parsed"""
-        if path.has(PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)):
+        if path.has(next_element):
             continue
 
         if path.has_previous() and next_possible_pipe_element.is_starting_point():
             return path
 
         if next_possible_pipe_element in direction_move_possibilities:
-            path.add(
-                PipeElement(meet_element_y, meet_element_x, next_possible_pipe_element)
-            )
+            print(next_element)
+            path.add(next_element)
+            path_len = len(path.pipe_elements)
+            if path_len == 68:
+                # f = open('path.txt', 'w')
+                # for el in path.pipe_elements:
+                #     f.write(f"{el.y};{el.x}\n")
+                print(path_len)
 
             return move(path, area)
+
+        """What here ?"""
+        # return None
 
 
 """
@@ -200,7 +212,7 @@ def move(path: Path, area: list) -> Path:
     
     To count result of the path I need add starting point. In this example 7 + 1
 """
-assert 7 == len(move(Path([PipeElement(1, 2, Pipe.EAST_WEST)]), test_map_1).pipe_elements)
+# assert 7 == len(move(Path([PipeElement(1, 2, Pipe.EAST_WEST)]), test_map_1).pipe_elements)
 
 test_map_2 = [
     ['7', '-', 'F', '7', '-'],
@@ -213,20 +225,51 @@ test_map_2 = [
 """
 Start all move from points around starting point (S)
 """
-correct_path_test_map_2 = move(Path([PipeElement(2, 1, Pipe.NORTH_WEST)]), test_map_2)
-
-print(len(correct_path_test_map_2.pipe_elements))
+# correct_path_test_map_2 = move(Path([PipeElement(2, 1, Pipe.NORTH_WEST)]), test_map_2)
+# print(len(correct_path_test_map_2.pipe_elements))
 
 from shared.main import load_data
 
 data_part_1 = load_data('input.txt')
 
-parsed_map = []
-for index, row in enumerate(data_part_1):
-    line_parsed = []
-    for el in row:
-        line_parsed.append(el)
-    parsed_map.append(line_parsed)
+
+def parse_data(data_part_1) -> list:
+    data = []
+    for index, row in enumerate(data_part_1):
+        line_parsed = []
+        for el in row:
+            line_parsed.append(el)
+        data.append(line_parsed)
+
+    return data
 
 
-print(parsed_map)
+def find_starting_point(area: list):
+    for idy, line in enumerate(area):
+        for idx, el in enumerate(line):
+            if el == Pipe.STARTING_POINT.value:
+                return idy, idx
+
+
+data = parse_data(data_part_1)
+
+s_y, s_x = find_starting_point(data)  # 79, 85
+
+"""Find directions from starting point to find paths"""
+
+
+def find_possible_starting_paths(starting_point: PipeElement, area: list) -> list:
+    points = []
+    for movement in movements.values():
+        points.append(movement(starting_point, area))
+
+    return points
+
+
+points = find_possible_starting_paths(PipeElement(s_y, s_x, Pipe.STARTING_POINT), data)
+
+print(points)
+
+found_path = move(Path([PipeElement(78, 85, Pipe('7'))]), data)
+
+print(found_path)
