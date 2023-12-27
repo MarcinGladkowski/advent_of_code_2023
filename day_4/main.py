@@ -145,4 +145,5 @@ calculate(dict_test_data)
 
 dict_data = data_to_dict(parse_cards(data))
 
-print(calculate(dict_data))
+"""Part 2 resolved"""
+assert 9721255 == calculate(dict_data)
