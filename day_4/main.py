@@ -5,11 +5,6 @@ test_data = load_data('input_test.txt')
 data = load_data('input.txt')
 
 
-# for i in range(1, 3):
-#     print(i)
-# 2, 1
-
-
 def flatten(test_list):
     if isinstance(test_list, list):
         if len(test_list) == 0:
@@ -97,44 +92,57 @@ assert calculate_sum(parse_cards(data)) == 25231  # day one part_1
 test_cards = parse_cards(test_data)
 
 
-def recursive_win_counter(data: dict, card: Card, count: int):
+def recursive_win_counter(data: dict, card: Card, nodes: dict):
+    """
+       Last execution is correct list:
 
-    print(f"Execute for for {card.id} with win {card.count_win()}")
+       len(calculate_for_card(dict_test_data, dict_test_data[1])[-1]))
+    """
+    if nodes.get(card.id) is None:
+        nodes[card.id] = 1
+    else:
+        nodes[card.id] += 1
 
     if card.is_win() is False:
-        return count
+        return nodes
 
-    count += 1
-
-    return sum(recursive_win_counter(data, data[card.id + win_copy_id], count) for win_copy_id in range(1, card.count_win() + 1))
+    return list(recursive_win_counter(data, data[card.id + win_copy_id], nodes) for win_copy_id in
+                range(1, card.count_win() + 1))
 
 
 def calculate_for_card(data: dict, card: Card):
-    return recursive_win_counter(data, card, 0)
+    return recursive_win_counter(data, card, {})
 
 
-dict_test_data = {}
-for card in test_cards:
-    dict_test_data[card.id] = card
-
-print(calculate_for_card(dict_test_data, dict_test_data[2]))
-
-exit()
-
-# flat = flatten(calculate_for_card(test_cards, test_cards[1]))
-
-# for el in flat:
-#     print(el.id)
-
-# assert 7 == len(flatten(calculate_for_card(test_cards, test_cards[1])))
+def get_result(nodes_count: dict):
+    return sum(nodes_count.values())
 
 
-# def calculate(data: list):
-#     total = 0
-#     for card in data:
-#         print(f"Processing {card.id}")
-#         total += len(flatten(calculate_for_card(data, card)))
-#     return total
-#
-#
-# assert 30 == calculate(test_cards)
+def data_to_dict(data: list) -> dict:
+    dict_data = {}
+    for card in data:
+        dict_data[card.id] = card
+    return dict_data
+
+
+dict_test_data = data_to_dict(test_cards)
+
+assert 7 == get_result(flatten(calculate_for_card(dict_test_data, dict_test_data[2]))[-1])
+assert 15 == get_result(flatten(calculate_for_card(dict_test_data, dict_test_data[1]))[-1])
+
+
+def calculate(data: dict):
+    total = 0
+    for card in data.values():
+        result = get_result(flatten(calculate_for_card(data, card))[-1])
+        total += result
+    return total
+
+
+assert 30 == calculate(dict_test_data)
+
+calculate(dict_test_data)
+
+dict_data = data_to_dict(parse_cards(data))
+
+print(calculate(dict_data))
