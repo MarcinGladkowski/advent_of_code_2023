@@ -9,7 +9,7 @@ class InstructionType(str, Enum):
     RIGHT = 'R'
 
 
-network = {
+test_data = {
     'AAA': ['BBB', 'CCC'],
     'BBB': ['DDD', 'EEE'],
     'CCC': ['ZZZ', 'GGG'],
@@ -85,6 +85,26 @@ class NetworkRunner:
             if i == len(instructions) - 1:
                 return self.reach_end_point(instructions, key, steps)
 
+    def reach_points_based_on_naming_strategy(self, instructions: str, key: callable = lambda x: x.endswith('A'), steps: int = 0, end_point: callable = lambda x: x.endswith('Z')):
+        """
+            key: starting point
+
+            callback function which takes start and end points
+        """
+
+        for i, instruction in enumerate(instructions):
+            steps += 1
+            point = self.get_point(key, InstructionType(instruction))
+
+            if end_point(point):
+                return steps
+
+            key = point
+
+            if i == len(instructions) - 1:
+                return self.reach_end_point(instructions, key, steps)
+
+
     def get_side_point_name(self, point: list, instruction: InstructionType) -> str:
         if instruction == InstructionType.LEFT:
             return point[0]
@@ -96,7 +116,7 @@ class NetworkRunner:
         return list(filter(lambda x: x.endswith('A'), self.network.keys()))
 
 
-networkRunner = NetworkRunner(network)
+networkRunner = NetworkRunner(test_data)
 
 assert ['BBB', 'CCC'] == networkRunner.get_point_name_by_code('AAA')
 assert 'CCC' == networkRunner.get_point('AAA', InstructionType.RIGHT)
@@ -116,3 +136,5 @@ instructions, points = parse_data(load_data('input.txt'))
 part_one = NetworkRunner(points)
 assert 17621 == part_one.reach_end_point(instructions)
 
+
+"""Part II"""
