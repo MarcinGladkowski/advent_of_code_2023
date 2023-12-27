@@ -1,5 +1,7 @@
 from enum import Enum
+import sys
 
+sys.setrecursionlimit(100_000)
 
 class Pipe(Enum):
     NORTH_SOUTH = '|'
@@ -192,19 +194,8 @@ def move(path: Path, area: list) -> Path:
             return path
 
         if next_possible_pipe_element in direction_move_possibilities:
-            print(next_element)
             path.add(next_element)
-            path_len = len(path.pipe_elements)
-            if path_len == 68:
-                # f = open('path.txt', 'w')
-                # for el in path.pipe_elements:
-                #     f.write(f"{el.y};{el.x}\n")
-                print(path_len)
-
             return move(path, area)
-
-        """What here ?"""
-        # return None
 
 
 """
@@ -268,8 +259,8 @@ def find_possible_starting_paths(starting_point: PipeElement, area: list) -> lis
 
 points = find_possible_starting_paths(PipeElement(s_y, s_x, Pipe.STARTING_POINT), data)
 
-print(points)
 
 found_path = move(Path([PipeElement(78, 85, Pipe('7'))]), data)
 
-print(found_path)
+"""part_1: Because of starting point I added +1"""
+assert 6613 == (len(found_path.pipe_elements) + 1) / 2
