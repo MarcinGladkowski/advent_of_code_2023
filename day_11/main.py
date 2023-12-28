@@ -120,7 +120,13 @@ class GalaxiesPath:
             raise TypeError('GalaxiesPath can only be')
 
         return (self.galaxy_1.name == __value.galaxy_1.name and self.galaxy_2.name == __value.galaxy_2.name) or (
-                    self.galaxy_2.name == __value.galaxy_1.name and self.galaxy_1.name == __value.galaxy_2.name)
+                self.galaxy_2.name == __value.galaxy_1.name and self.galaxy_1.name == __value.galaxy_2.name)
+
+    def distance(self) -> int:
+        y = self.galaxy_2.position_y - self.galaxy_1.position_y
+        x = self.galaxy_2.position_x - self.galaxy_1.position_x
+
+        return abs(x) + abs(y)
 
 
 assert GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)) == GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2))
@@ -128,6 +134,9 @@ assert False == (GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)) == GalaxiesPath(
 
 assert (GalaxiesPath(Galaxy(2, 2, 2), Galaxy(1, 1, 1))
         == GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)))
+
+assert 15 == GalaxiesPath(Galaxy(1, 0, 4), Galaxy(7, 10, 9)).distance()
+assert 17 == GalaxiesPath(Galaxy(3, 2, 0), Galaxy(6, 7, 12)).distance()
 
 
 def has_path(candidate: GalaxiesPath, paths_combinations: list):
@@ -164,6 +173,10 @@ def path_combinations(galaxies: list) -> list:
 
 test_galaxies = get_galaxies(expanded_test_galaxy)
 
-pprint(len(path_combinations(test_galaxies)))
-
 assert 36 == len(path_combinations(test_galaxies))
+
+def calculate_distances(paths: list) -> int:
+    return sum(list(map(lambda path: path.distance(), paths)))
+
+
+assert 374 == calculate_distances(path_combinations(test_galaxies))
