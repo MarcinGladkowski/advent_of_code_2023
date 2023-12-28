@@ -91,9 +91,6 @@ class Galaxy:
         self.name = name
 
 
-
-
-
 def get_galaxies(universe: list) -> list:
     """Get all galaxies from universe"""
     galaxies = []
@@ -108,3 +105,65 @@ def get_galaxies(universe: list) -> list:
 
 
 assert 9 == len(get_galaxies(expanded_test_galaxy))
+
+
+class GalaxiesPath:
+    def __init__(self, galaxy_1: Galaxy, galaxy_2: Galaxy):
+        self.galaxy_1 = galaxy_1
+        self.galaxy_2 = galaxy_2
+
+    def __str__(self):
+        return f"{self.galaxy_1.name}-{self.galaxy_2.name}"
+
+    def __eq__(self, __value):
+        if __value is not None and isinstance(__value, GalaxiesPath) is False:
+            raise TypeError('GalaxiesPath can only be')
+
+        return (self.galaxy_1.name == __value.galaxy_1.name and self.galaxy_2.name == __value.galaxy_2.name) or (
+                    self.galaxy_2.name == __value.galaxy_1.name and self.galaxy_1.name == __value.galaxy_2.name)
+
+
+assert GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)) == GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2))
+assert False == (GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)) == GalaxiesPath(Galaxy(2, 1, 1), Galaxy(2, 2, 2)))
+
+assert (GalaxiesPath(Galaxy(2, 2, 2), Galaxy(1, 1, 1))
+        == GalaxiesPath(Galaxy(1, 1, 1), Galaxy(2, 2, 2)))
+
+
+def has_path(candidate: GalaxiesPath, paths_combinations: list):
+    for path in paths_combinations:
+        if candidate == path:
+            return True
+    return False
+
+
+def path_combinations(galaxies: list) -> list:
+    """
+        Unique combinations, not with both the same,
+        using index/name to find combinations
+    """
+    paths_combinations = []
+
+    for idx, galaxy in enumerate(galaxies):
+        for next_galaxy_index in range(0, len(galaxies)):
+
+            next_galaxy = galaxies[next_galaxy_index]
+
+            if galaxy == next_galaxy:
+                continue
+
+            path_candidate = GalaxiesPath(galaxy, next_galaxy)
+
+            if has_path(path_candidate, paths_combinations):
+                continue
+
+            paths_combinations.append(path_candidate)
+
+    return paths_combinations
+
+
+test_galaxies = get_galaxies(expanded_test_galaxy)
+
+pprint(len(path_combinations(test_galaxies)))
+
+assert 36 == len(path_combinations(test_galaxies))
