@@ -90,6 +90,9 @@ class Galaxy:
         self.position_y = position_y
         self.name = name
 
+    def __str__(self):
+        return f"Galaxy {self.name} | y: {self.position_y} - x: {self.position_x}"
+
 
 def get_galaxies(universe: list) -> list:
     """Get all galaxies from universe"""
@@ -154,6 +157,7 @@ def path_combinations(galaxies: list) -> list:
     paths_combinations = []
 
     for idx, galaxy in enumerate(galaxies):
+        print(f"Processing {galaxy.__str__()}")
         for next_galaxy_index in range(0, len(galaxies)):
 
             next_galaxy = galaxies[next_galaxy_index]
@@ -180,3 +184,17 @@ def calculate_distances(paths: list) -> int:
 
 
 assert 374 == calculate_distances(path_combinations(test_galaxies))
+
+
+universum_raw = load_data('input.txt')
+
+"""Based on galaxies count we can calculate expected number of combinations"""
+galaxies = get_galaxies(universum_raw)
+
+print(len(galaxies))
+
+galaxies_paths = path_combinations(galaxies)
+"""
+Answer is to low: 9144484
+"""
+print(calculate_distances(galaxies_paths))
