@@ -66,7 +66,7 @@ def expand_vertically(universum: list) -> list:
     empty_row = ['.' for _ in range(0, len(universum[0]))]
 
     for i, expand in enumerate(rows_to_expand):
-        universum.insert(expand+i, empty_row)
+        universum.insert(expand + i, empty_row)
 
     return universum
 
@@ -77,5 +77,34 @@ def expand_universum(galaxy: list) -> list:
     return galaxy
 
 
-pprint(object=parse(load_data('test_input_expanded.txt')), width=100)
-pprint(object=expand_universum(test_galaxy), width=100)
+# pprint(object=parse(load_data('test_input_expanded.txt')), width=100)
+# pprint(object=expand_universum(test_galaxy), width=100)
+
+"""Get all galaxies"""
+expanded_test_galaxy = expand_universum(test_galaxy)
+
+
+class Galaxy:
+    def __init__(self, name: int, position_y: int, position_x: int):
+        self.position_x = position_x
+        self.position_y = position_y
+        self.name = name
+
+
+
+
+
+def get_galaxies(universe: list) -> list:
+    """Get all galaxies from universe"""
+    galaxies = []
+
+    for y, row in enumerate(universe):
+        for x, cell in enumerate(row):
+            if cell == '#':
+                name = len(galaxies) + 1
+                galaxies.append(Galaxy(name, y, x))
+
+    return galaxies
+
+
+assert 9 == len(get_galaxies(expanded_test_galaxy))
