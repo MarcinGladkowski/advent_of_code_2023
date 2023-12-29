@@ -186,24 +186,26 @@ def calculate_distances(paths: list) -> int:
 
 assert 374 == calculate_distances(path_combinations(test_galaxies))
 
-"""
-Algorithm is takes few minutes to complete the calculation!
 
-Steps to calculate the result
- - load data
- - expand universe
- - get galaxies
- - find combinations
- - calculate path distances
-"""
-universum_raw = load_data('input.txt')
-parsed_universum = parse(universum_raw)
-expanded = expand_universum(parsed_universum)
-galaxies = get_galaxies(expanded)
+def sum_of_shortest_distances(file_path: str) -> int:
+    """
+    Algorithm is takes few minutes to complete the calculation!
 
-assert 439 == len(galaxies)
+    Steps to calculate the result
+     - load data
+     - expand universe
+     - get galaxies
+     - find combinations
+     - calculate path distances
+    """
+    universum_raw = load_data(file_path)
+    parsed_universum = parse(universum_raw)
+    expanded = expand_universum(parsed_universum)
+    galaxies = get_galaxies(expanded)
+    galaxies_paths = path_combinations(galaxies)
+    result = calculate_distances(galaxies_paths)
 
-galaxies_paths = path_combinations(galaxies)
+    return result
 
-assert 9795148 == calculate_distances(galaxies_paths)
 
+# assert 9795148 == sum_of_shortest_distances('input.txt')
