@@ -82,10 +82,10 @@ def expand_vertically(universum: list, expand_multiplier: int = 1) -> list:
 
     for i, expand in enumerate(rows_to_expand):
         if i == 0:
-            for j in range(1, expand_multiplier+1):
+            for j in range(1, expand_multiplier + 1):
                 universum.insert(expand + i, empty_row)
         else:
-            for j in range(1, expand_multiplier+1):
+            for j in range(1, expand_multiplier + 1):
                 universum.insert(expand + expand_multiplier + i, empty_row)
 
     return universum
@@ -96,9 +96,9 @@ assert [['.'], ['.'], ['#'], ['.'], ['.']] == expand_vertically([['.'], ['#'], [
 assert [['.'], ['.'], ['.'], ['#'], ['.'], ['.'], ['.']] == expand_vertically([['.'], ['#'], ['.']], 2)
 
 
-def expand_universum(galaxy: list) -> list:
-    galaxy = expand_horizontally(galaxy, 1)
-    galaxy = expand_vertically(galaxy)
+def expand_universum(galaxy: list, multiplier: int = 1) -> list:
+    galaxy = expand_horizontally(galaxy, multiplier)
+    galaxy = expand_vertically(galaxy, multiplier)
     return galaxy
 
 
@@ -107,8 +107,6 @@ def expand_universum(galaxy: list) -> list:
 
 """Get all galaxies"""
 expanded_test_galaxy = expand_universum(test_galaxy)
-
-print(len(expanded_test_galaxy[0]))
 
 assert len(expanded_test_galaxy) == 12
 assert len(expanded_test_galaxy[0]) == 13
@@ -187,7 +185,7 @@ def path_combinations(galaxies: list) -> list:
     paths_combinations = []
 
     for idx, galaxy in enumerate(galaxies):
-        print(f"Processing {galaxy.__str__()}")
+        # print(f"Processing {galaxy.__str__()}")
         for next_galaxy_index in range(0, len(galaxies)):
 
             next_galaxy = galaxies[next_galaxy_index]
@@ -214,10 +212,7 @@ def calculate_distances(paths: list) -> int:
     return sum(list(map(lambda path: path.distance(), paths)))
 
 
-assert 374 == calculate_distances(path_combinations(test_galaxies))
-
-
-def sum_of_shortest_distances(file_path: str) -> int:
+def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
     """
     Algorithm is takes few minutes to complete the calculation!
 
@@ -230,11 +225,16 @@ def sum_of_shortest_distances(file_path: str) -> int:
     """
     universum_raw = load_data(file_path)
     parsed_universum = parse(universum_raw)
-    expanded = expand_universum(parsed_universum)
+    expanded = expand_universum(parsed_universum, galaxy_expander)
     galaxies = get_galaxies(expanded)
     galaxies_paths = path_combinations(galaxies)
     result = calculate_distances(galaxies_paths)
 
     return result
 
+
 # assert 9795148 == sum_of_shortest_distances('input.txt')
+
+assert 374 == sum_of_shortest_distances('test_input.txt', 1)
+
+print(sum_of_shortest_distances('test_input.txt', 10))
