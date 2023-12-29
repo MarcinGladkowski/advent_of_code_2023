@@ -23,16 +23,17 @@ def expand_row(universum_row: list, expanders: list, expander_sign: str = '.', m
     for i, expander in enumerate(expanders):
 
         if i == 0:
-            for j in range(1, multiplier+1):
+            for j in range(1, multiplier + 1):
                 universum_row.insert(expander + i, expander_sign)
         else:
-            for j in range(1, multiplier+1):
+            for j in range(1, multiplier + 1):
                 universum_row.insert(expander + multiplier + i, expander_sign)
 
     return universum_row
 
 
-assert ['.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'] == expand_row(['.', '.', '.', '#', '.', '.', '.', '.', '.', '.'], [2, 5, 8])
+assert ['.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'] == expand_row(
+    ['.', '.', '.', '#', '.', '.', '.', '.', '.', '.'], [2, 5, 8])
 
 assert ['.', '.'] == expand_row(['.'], [1], '.', 1)
 assert ['.', '.'] == expand_row(['.'], [0], '.', 1)
@@ -64,13 +65,13 @@ def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
     return universum
 
 
-
 assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']], 1)
 assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']])
-assert [['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']] == expand_horizontally([['.', '#', '.']], 10)
+assert [['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.',
+         '.']] == expand_horizontally([['.', '#', '.']], 10)
 
 
-def expand_vertically(universum: list) -> list:
+def expand_vertically(universum: list, expand_multiplier: int = 1) -> list:
     """duplicate row"""
     rows_to_expand = []
     for i, row in enumerate(universum):
@@ -80,9 +81,19 @@ def expand_vertically(universum: list) -> list:
     empty_row = ['.' for _ in range(0, len(universum[0]))]
 
     for i, expand in enumerate(rows_to_expand):
-        universum.insert(expand + i, empty_row)
+        if i == 0:
+            for j in range(1, expand_multiplier+1):
+                universum.insert(expand + i, empty_row)
+        else:
+            for j in range(1, expand_multiplier+1):
+                universum.insert(expand + expand_multiplier + i, empty_row)
 
     return universum
+
+
+assert [['.'], ['.'], ['.'], ['.']] == expand_vertically([['.'], ['.']])
+assert [['.'], ['.'], ['#'], ['.'], ['.']] == expand_vertically([['.'], ['#'], ['.']])
+assert [['.'], ['.'], ['.'], ['#'], ['.'], ['.'], ['.']] == expand_vertically([['.'], ['#'], ['.']], 2)
 
 
 def expand_universum(galaxy: list) -> list:
@@ -96,7 +107,6 @@ def expand_universum(galaxy: list) -> list:
 
 """Get all galaxies"""
 expanded_test_galaxy = expand_universum(test_galaxy)
-
 
 print(len(expanded_test_galaxy[0]))
 
