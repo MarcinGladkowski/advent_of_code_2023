@@ -16,24 +16,32 @@ test_galaxy = parse(test_universum_raw)
 
 
 def has_galaxies(universum_row: list) -> bool:
-    return len(set(universum_row)) > 1
+    return len(list(filter(lambda g: g == '#', universum_row))) > 0
 
 
-def expand_row(universum_row: list, expanders: list, expander_sign: str = '.') -> list:
+def expand_row(universum_row: list, expanders: list, expander_sign: str = '.', multiplier: int = 1) -> list:
     for i, expander in enumerate(expanders):
-        universum_row.insert(expander + i, expander_sign)
+
+        if i == 0:
+            for j in range(1, multiplier+1):
+                universum_row.insert(expander + i, expander_sign)
+        else:
+            for j in range(1, multiplier+1):
+                universum_row.insert(expander + multiplier + i, expander_sign)
 
     return universum_row
 
 
-assert ['.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'] == expand_row(
-    ['.', '.', '.', '#', '.', '.', '.', '.', '.', '.'], [2, 5, 8])
+assert ['.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'] == expand_row(['.', '.', '.', '#', '.', '.', '.', '.', '.', '.'], [2, 5, 8])
+
+assert ['.', '.'] == expand_row(['.'], [1], '.', 1)
+assert ['.', '.'] == expand_row(['.'], [0], '.', 1)
 
 assert has_galaxies(['.', '.']) == False
 assert has_galaxies(['.', '#'])
 
 
-def expand_horizontally(universum: list) -> list:
+def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
     """duplicate elements in rows"""
     by_vertical = {}
     for i, row in enumerate(universum):
@@ -51,9 +59,15 @@ def expand_horizontally(universum: list) -> list:
             continue
 
     for r, row_to_expand in enumerate(universum):
-        expand_row(row_to_expand, columns_to_expand)
+        expand_row(row_to_expand, columns_to_expand, '.', expand_multiplier)
 
     return universum
+
+
+
+assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']], 1)
+assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']])
+assert [['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']] == expand_horizontally([['.', '#', '.']], 10)
 
 
 def expand_vertically(universum: list) -> list:
@@ -72,7 +86,7 @@ def expand_vertically(universum: list) -> list:
 
 
 def expand_universum(galaxy: list) -> list:
-    galaxy = expand_horizontally(galaxy)
+    galaxy = expand_horizontally(galaxy, 1)
     galaxy = expand_vertically(galaxy)
     return galaxy
 
@@ -82,6 +96,9 @@ def expand_universum(galaxy: list) -> list:
 
 """Get all galaxies"""
 expanded_test_galaxy = expand_universum(test_galaxy)
+
+
+print(len(expanded_test_galaxy[0]))
 
 assert len(expanded_test_galaxy) == 12
 assert len(expanded_test_galaxy[0]) == 13
@@ -209,6 +226,5 @@ def sum_of_shortest_distances(file_path: str) -> int:
     result = calculate_distances(galaxies_paths)
 
     return result
-
 
 # assert 9795148 == sum_of_shortest_distances('input.txt')
