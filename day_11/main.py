@@ -83,6 +83,9 @@ def expand_universum(galaxy: list) -> list:
 """Get all galaxies"""
 expanded_test_galaxy = expand_universum(test_galaxy)
 
+assert len(expanded_test_galaxy) == 12
+assert len(expanded_test_galaxy[0]) == 13
+
 
 class Galaxy:
     def __init__(self, name: int, position_y: int, position_x: int):
