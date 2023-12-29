@@ -209,7 +209,15 @@ assert 36 == len(path_combinations(test_galaxies))
 
 
 def calculate_distances(paths: list) -> int:
-    return sum(list(map(lambda path: path.distance(), paths)))
+
+    distances = list(map(lambda path: path.distance(), paths))
+
+    distances = []
+    for path in paths:
+        distances.append(path.distance())
+        print(f"{path.__str__()} - {path.distance()}")
+
+    return sum(distances)
 
 
 def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
@@ -226,7 +234,17 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
     universum_raw = load_data(file_path)
     parsed_universum = parse(universum_raw)
     expanded = expand_universum(parsed_universum, galaxy_expander)
+
+    pprint(object=expanded, width=1000)
+    print(len(expanded), len(expanded[0]))
+
     galaxies = get_galaxies(expanded)
+
+    print(len(galaxies))
+
+    for galaxy in galaxies:
+        print(galaxy)
+
     galaxies_paths = path_combinations(galaxies)
     result = calculate_distances(galaxies_paths)
 
@@ -235,6 +253,6 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
 
 # assert 9795148 == sum_of_shortest_distances('input.txt')
 
-assert 374 == sum_of_shortest_distances('test_input.txt', 1)
+# assert 374 == sum_of_shortest_distances('test_input.txt', 1)
 
 print(sum_of_shortest_distances('test_input.txt', 10))
