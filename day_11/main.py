@@ -179,22 +179,31 @@ test_galaxies = get_galaxies(expanded_test_galaxy)
 
 assert 36 == len(path_combinations(test_galaxies))
 
+
 def calculate_distances(paths: list) -> int:
     return sum(list(map(lambda path: path.distance(), paths)))
 
 
 assert 374 == calculate_distances(path_combinations(test_galaxies))
 
+"""
+Algorithm is takes few minutes to complete the calculation!
 
+Steps to calculate the result
+ - load data
+ - expand universe
+ - get galaxies
+ - find combinations
+ - calculate path distances
+"""
 universum_raw = load_data('input.txt')
+parsed_universum = parse(universum_raw)
+expanded = expand_universum(parsed_universum)
+galaxies = get_galaxies(expanded)
 
-"""Based on galaxies count we can calculate expected number of combinations"""
-galaxies = get_galaxies(universum_raw)
-
-print(len(galaxies))
+assert 439 == len(galaxies)
 
 galaxies_paths = path_combinations(galaxies)
-"""
-Answer is to low: 9144484
-"""
-print(calculate_distances(galaxies_paths))
+
+assert 9795148 == calculate_distances(galaxies_paths)
+
