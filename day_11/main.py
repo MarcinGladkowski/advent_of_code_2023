@@ -96,9 +96,9 @@ assert [['.'], ['.'], ['#'], ['.'], ['.']] == expand_vertically([['.'], ['#'], [
 assert [['.'], ['.'], ['.'], ['#'], ['.'], ['.'], ['.']] == expand_vertically([['.'], ['#'], ['.']], 2)
 
 
-def expand_universum(galaxy: list, multiplier: int = 1) -> list:
-    galaxy = expand_horizontally(galaxy, multiplier)
-    galaxy = expand_vertically(galaxy, multiplier)
+def expand_universum(galaxy: list, multiplier_horizontally: int = 1, multiplier_vertically: int = 1) -> list:
+    galaxy = expand_horizontally(galaxy, multiplier_horizontally)
+    galaxy = expand_vertically(galaxy, multiplier_vertically)
     return galaxy
 
 
@@ -134,6 +134,12 @@ def get_galaxies(universe: list) -> list:
 
     return galaxies
 
+
+def set_galaxies_names_to_universum(universe: list, galaxies: [Galaxy]) -> list:
+    for galaxy in galaxies:
+        universe[galaxy.position_y][galaxy.position_x] = galaxy.name
+
+    return universe
 
 assert 9 == len(get_galaxies(expanded_test_galaxy))
 
@@ -209,9 +215,6 @@ assert 36 == len(path_combinations(test_galaxies))
 
 
 def calculate_distances(paths: list) -> int:
-
-    distances = list(map(lambda path: path.distance(), paths))
-
     distances = []
     for path in paths:
         distances.append(path.distance())
@@ -233,14 +236,16 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
     """
     universum_raw = load_data(file_path)
     parsed_universum = parse(universum_raw)
-    expanded = expand_universum(parsed_universum, galaxy_expander)
+    expanded = expand_universum(parsed_universum, galaxy_expander, galaxy_expander)
 
     pprint(object=expanded, width=1000)
     print(len(expanded), len(expanded[0]))
 
     galaxies = get_galaxies(expanded)
 
-    print(len(galaxies))
+    pprint(object=set_galaxies_names_to_universum(expanded, galaxies), width=1000)
+
+    assert 9 == len(galaxies)
 
     for galaxy in galaxies:
         print(galaxy)
