@@ -42,8 +42,10 @@ assert has_galaxies(['.', '.']) == False
 assert has_galaxies(['.', '#'])
 
 
-def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
-    """duplicate elements in rows"""
+def get_horizontal_expand_positions(universum: list) -> list[int]:
+    """
+        Return only empty rows indexes
+    """
     by_vertical = {}
     for i, row in enumerate(universum):
         for j, cell in enumerate(row):
@@ -59,6 +61,13 @@ def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
             columns_to_expand.append(key)
             continue
 
+    return columns_to_expand
+
+
+def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
+    """duplicate elements in rows"""
+    columns_to_expand = get_horizontal_expand_positions(universum)
+
     for r, row_to_expand in enumerate(universum):
         expand_row(row_to_expand, columns_to_expand, '.', expand_multiplier)
 
@@ -71,14 +80,19 @@ assert [['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '
          '.']] == expand_horizontally([['.', '#', '.']], 10)
 
 
-def expand_vertically(universum: list, expand_multiplier: int = 1) -> list:
-    """duplicate row"""
+def get_vertical_expand_positions(universum: list):
     rows_to_expand = []
     for i, row in enumerate(universum):
         if has_galaxies(row) is False:
             rows_to_expand.append(i)
 
+    return rows_to_expand
+
+def expand_vertically(universum: list, expand_multiplier: int = 1) -> list:
+    """duplicate row"""
     empty_row = ['.' for _ in range(0, len(universum[0]))]
+
+    rows_to_expand = get_vertical_expand_positions(universum)
 
     for i, expand in enumerate(rows_to_expand):
         if i == 0:
@@ -141,6 +155,7 @@ def set_galaxies_names_to_universum(universe: list, galaxies: [Galaxy]) -> list:
 
     return universe
 
+
 assert 9 == len(get_galaxies(expanded_test_galaxy))
 
 
@@ -162,6 +177,8 @@ class GalaxiesPath:
     def distance(self) -> int:
         y = self.galaxy_2.position_y - self.galaxy_1.position_y
         x = self.galaxy_2.position_x - self.galaxy_1.position_x
+
+        print(f"Calculated y: {y} - x: {x}")
 
         return abs(x) + abs(y)
 
@@ -220,6 +237,7 @@ def calculate_distances(paths: list) -> int:
         distances.append(path.distance())
         print(f"{path.__str__()} - {path.distance()}")
 
+    print(f"Combinations: {len(distances)}")
     return sum(distances)
 
 
@@ -258,6 +276,6 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
 
 # assert 9795148 == sum_of_shortest_distances('input.txt')
 
-# assert 374 == sum_of_shortest_distances('test_input.txt', 1)
+assert 374 == sum_of_shortest_distances('test_input.txt', 1)
 
-print(sum_of_shortest_distances('test_input.txt', 10))
+print(sum_of_shortest_distances('test_input.txt', 9))
