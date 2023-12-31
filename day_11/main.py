@@ -1,3 +1,4 @@
+import time
 from pprint import pprint
 
 from shared.main import load_data
@@ -247,7 +248,7 @@ def path_combinations(galaxies: list) -> list:
     paths_combinations = []
 
     for idx, galaxy in enumerate(galaxies):
-        # print(f"Processing {galaxy.__str__()}")
+        print(f"Processing {galaxy.__str__()}")
         for next_galaxy_index in range(0, len(galaxies)):
 
             next_galaxy = galaxies[next_galaxy_index]
@@ -275,9 +276,9 @@ def calculate_distances(paths: list) -> int:
     for path in paths:
         pair_distance = path.distance()
         distances.append(pair_distance)
-        print(f"{path.__str__()} - {pair_distance}")
+        #print(f"{path.__str__()} - {pair_distance}")
 
-    print(f"Combinations: {len(distances)}")
+    # print(f"Combinations: {len(distances)}")
     return sum(distances)
 
 
@@ -294,22 +295,8 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
     """
     universum_raw = load_data(file_path)
     parsed_universum = parse(universum_raw)
-    #expanded = expand_universum(parsed_universum, galaxy_expander, galaxy_expander)
-
-    # pprint(object=expanded, width=1000)
-    # print(len(expanded), len(expanded[0]))
-
     galaxies = get_galaxies(parsed_universum)
-
     galaxies = expand_galaxies(galaxies, parsed_universum, galaxy_expander)
-
-    #pprint(object=set_galaxies_names_to_universum(expanded, galaxies), width=1000)
-
-    assert 9 == len(galaxies)
-
-    for galaxy in galaxies:
-        print(galaxy)
-
     galaxies_paths = path_combinations(galaxies)
     result = calculate_distances(galaxies_paths)
 
@@ -320,4 +307,10 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
 
 # assert 374 == sum_of_shortest_distances('test_input.txt', 1)
 
-print(sum_of_shortest_distances('test_input.txt', 9))
+start = time.time()
+
+print(sum_of_shortest_distances('input.txt', 9))
+
+end = time.time()
+print("Took %f ms" % ((end - start) * 1000.0))
+
