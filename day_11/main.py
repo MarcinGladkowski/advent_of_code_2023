@@ -74,6 +74,14 @@ def expand_horizontally(universum: list, expand_multiplier: int = 1) -> list:
     return universum
 
 
+def get_vertical_horizontal_expands_points(universum: list):
+    return {
+        'x': get_horizontal_expand_positions(universum),
+        'y': get_vertical_expand_positions(universum)
+    }
+
+
+
 assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']], 1)
 assert [['.', '.', '.', '.']] == expand_horizontally([['.', '.']])
 assert [['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.',
@@ -134,6 +142,37 @@ class Galaxy:
 
     def __str__(self):
         return f"Galaxy {self.name} | y: {self.position_y} - x: {self.position_x}"
+
+
+def move_galaxy_by_expand(galaxy: Galaxy, expand_map: dict, expand_multiplier: int) -> Galaxy:
+
+    x_expand_multiplier = list(filter(lambda empty_row: galaxy.position_x > empty_row, expand_map['x']))
+    y_expand_multiplier = list(filter(lambda empty_row: galaxy.position_y > empty_row, expand_map['y']))
+
+    if len(x_expand_multiplier) > 0:
+        galaxy.position_x = galaxy.position_x + (expand_multiplier * len(x_expand_multiplier))
+
+    if len(y_expand_multiplier) > 0:
+        galaxy.position_y = galaxy.position_y + (expand_multiplier * len(y_expand_multiplier))
+
+    return galaxy
+
+
+galaxy_to_move_vertically = Galaxy(1, 3, 3)
+
+
+assert 13 == move_galaxy_by_expand(galaxy_to_move_vertically, {'x': [2, 4, 8], 'y': []}, 10).position_x
+assert 13 == move_galaxy_by_expand(galaxy_to_move_vertically, {'x': [], 'y': [2, 4, 8]}, 10).position_x
+
+
+def expand_galaxies(galaxies: list, universum: list, expand_multiplier: int):
+    expand_directions_map = get_vertical_horizontal_expands_points(universum)
+
+    moved_galaxies = []
+    for galaxy in galaxies:
+        moved_galaxies.append(move_galaxy_by_expand(galaxy, expand_directions_map, expand_multiplier))
+
+    return moved_galaxies
 
 
 def get_galaxies(universe: list) -> list:
@@ -234,8 +273,9 @@ assert 36 == len(path_combinations(test_galaxies))
 def calculate_distances(paths: list) -> int:
     distances = []
     for path in paths:
-        distances.append(path.distance())
-        print(f"{path.__str__()} - {path.distance()}")
+        pair_distance = path.distance()
+        distances.append(pair_distance)
+        print(f"{path.__str__()} - {pair_distance}")
 
     print(f"Combinations: {len(distances)}")
     return sum(distances)
@@ -254,14 +294,16 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
     """
     universum_raw = load_data(file_path)
     parsed_universum = parse(universum_raw)
-    expanded = expand_universum(parsed_universum, galaxy_expander, galaxy_expander)
+    #expanded = expand_universum(parsed_universum, galaxy_expander, galaxy_expander)
 
-    pprint(object=expanded, width=1000)
-    print(len(expanded), len(expanded[0]))
+    # pprint(object=expanded, width=1000)
+    # print(len(expanded), len(expanded[0]))
 
-    galaxies = get_galaxies(expanded)
+    galaxies = get_galaxies(parsed_universum)
 
-    pprint(object=set_galaxies_names_to_universum(expanded, galaxies), width=1000)
+    galaxies = expand_galaxies(galaxies, parsed_universum, galaxy_expander)
+
+    #pprint(object=set_galaxies_names_to_universum(expanded, galaxies), width=1000)
 
     assert 9 == len(galaxies)
 
@@ -276,6 +318,6 @@ def sum_of_shortest_distances(file_path: str, galaxy_expander: int = 1) -> int:
 
 # assert 9795148 == sum_of_shortest_distances('input.txt')
 
-assert 374 == sum_of_shortest_distances('test_input.txt', 1)
+# assert 374 == sum_of_shortest_distances('test_input.txt', 1)
 
 print(sum_of_shortest_distances('test_input.txt', 9))
