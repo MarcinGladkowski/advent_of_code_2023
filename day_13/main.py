@@ -23,7 +23,9 @@ test_data_horizontal = [
 
 def recognize_axis(board: list):
     """
-    we have to check two axis as once and get only
+    Solution based on indexes!
+
+    We have to check two axis as once and get only
     that one which touch an at least one edge.
     """
     pass
@@ -71,14 +73,12 @@ assert is_same(['.', '#', '.'], ['.', '#', '.'])
 assert is_same(['.', '#', '.'], ['.', '#', '#']) == False
 
 
-def is_vertical_mirrored(columns: list, middle: tuple[int, int]) -> bool:
+def is_mirrored(columns: list, middle: tuple[int, int]) -> bool:
     """
     Columns must be transformed before!
     check rows from middle to edges
     """
     counter_down, counter_up = middle
-    counter_up -= 1
-    counter_down -= 1
 
     for i in range(counter_down):
         row_left = counter_down - i
@@ -98,5 +98,9 @@ def is_vertical_mirrored(columns: list, middle: tuple[int, int]) -> bool:
     return True
 
 
-transformed_data = to_columns(test_data_vertical)
-assert is_vertical_mirrored(transformed_data, (5, 6))
+transformed_test_data_vertical = to_columns(test_data_vertical)
+assert is_mirrored(transformed_test_data_vertical, (4, 5))
+
+assert is_mirrored(test_data_horizontal, (3, 4)) == True
+assert is_mirrored(transformed_test_data_vertical, (2, 3)) == False
+assert is_mirrored(transformed_test_data_vertical, (6, 7)) == False
