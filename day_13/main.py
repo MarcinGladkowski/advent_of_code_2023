@@ -124,7 +124,7 @@ def recognize_axis(board: list):
     if len(axis_for_vertical) > 0:
         for axle in axis_for_vertical:
             if is_mirrored(transformed_to_vertical_test, axle):
-                return axle[0]
+                return axle[0] + 1
 
     # test all axis for mirrors horizontal
     # while find mirror return number
@@ -132,10 +132,11 @@ def recognize_axis(board: list):
 
     if len(axis_for_horizontal) > 0:
         for axle in axis_for_horizontal:
-            if is_mirrored(transformed_to_vertical_test, axle):
-                return axle[0] * 100
+            if is_mirrored(axis_for_horizontal, axle):
+                return (axle[0] + 1) * 100
 
     return 0
 
 
-assert 4 == recognize_axis(test_data_vertical)
+assert 5 == recognize_axis(test_data_vertical)
+assert 400 == recognize_axis(test_data_horizontal)
