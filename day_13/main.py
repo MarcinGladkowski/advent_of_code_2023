@@ -28,6 +28,9 @@ def recognize_axis(board: list):
     We have to check two axis as once and get only
     that one which touch an at least one edge.
     """
+
+
+    # transform data
     pass
 
 
@@ -42,27 +45,34 @@ def to_columns(data: list):
     return to_columns
 
 
-def check_vertical(data: list) -> tuple[int, int] | None:
+def neighbouring_pairs(board: list) -> list:
+    pairs = []
+    for i, x in enumerate(board):
+
+        if i + 1 >= len(board):
+            continue
+
+        if ''.join(x) == ''.join(board[i + 1]):
+            pairs.append((i, i + 1))
+
+    return pairs
+
+def check_vertical(data: list) -> list:
     """
     Firstly we're rewriting columns to rows
     and then returning indexes of found middle columns
     """
     transformed_data = to_columns(data)
-
-    for i, x in enumerate(transformed_data):
-        if ''.join(x) == ''.join(transformed_data[i + 1]):
-            return i, i + 1
+    return neighbouring_pairs(transformed_data)
 
 
-def check_horizontal(data: list) -> tuple[int, int] | None:
+def check_horizontal(data: list) -> list:
     """Returning indexes of found middle columns"""
-    for i, x in enumerate(data):
-        if ''.join(x) == ''.join(data[i + 1]):
-            return i, i + 1
+    return neighbouring_pairs(data)
 
 
-assert (3, 4) == check_horizontal(test_data_horizontal)
-assert (4, 5) == check_vertical(test_data_vertical)
+assert [(3, 4)] == check_horizontal(test_data_horizontal)
+assert [(4, 5)] == check_vertical(test_data_vertical)
 
 
 def is_same(row_a: list, row_b: list) -> bool:
