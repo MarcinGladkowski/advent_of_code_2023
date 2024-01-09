@@ -21,19 +21,6 @@ test_data_horizontal = [
 ]
 
 
-def recognize_axis(board: list):
-    """
-    Solution based on indexes!
-
-    We have to check two axis as once and get only
-    that one which touch an at least one edge.
-    """
-
-
-    # transform data
-    pass
-
-
 def to_columns(data: list):
     rows_length = len(data[0])
     to_columns = [[] for _ in range(rows_length)]
@@ -57,13 +44,13 @@ def neighbouring_pairs(board: list) -> list:
 
     return pairs
 
+
 def check_vertical(data: list) -> list:
     """
     Firstly we're rewriting columns to rows
     and then returning indexes of found middle columns
     """
-    transformed_data = to_columns(data)
-    return neighbouring_pairs(transformed_data)
+    return neighbouring_pairs(data)
 
 
 def check_horizontal(data: list) -> list:
@@ -72,7 +59,10 @@ def check_horizontal(data: list) -> list:
 
 
 assert [(3, 4)] == check_horizontal(test_data_horizontal)
-assert [(4, 5)] == check_vertical(test_data_vertical)
+
+transformed_test_data_vertical = to_columns(test_data_vertical)
+
+assert [(4, 5)] == check_vertical(transformed_test_data_vertical)
 
 
 def is_same(row_a: list, row_b: list) -> bool:
@@ -114,3 +104,38 @@ assert is_mirrored(transformed_test_data_vertical, (4, 5))
 assert is_mirrored(test_data_horizontal, (3, 4)) == True
 assert is_mirrored(transformed_test_data_vertical, (2, 3)) == False
 assert is_mirrored(transformed_test_data_vertical, (6, 7)) == False
+
+
+def recognize_axis(board: list):
+    """
+    Solution based on indexes!
+
+    We have to check two axis as once and get only
+    that one which touch an at least one edge.
+    """
+    # transform data (for vertical testing)
+    # get all middle axis
+    # test all axis for mirrors vertical
+    # while find mirror return number
+    transformed_to_vertical_test = to_columns(board)
+
+    axis_for_vertical = check_vertical(transformed_to_vertical_test)
+
+    if len(axis_for_vertical) > 0:
+        for axle in axis_for_vertical:
+            if is_mirrored(transformed_to_vertical_test, axle):
+                return axle[0]
+
+    # test all axis for mirrors horizontal
+    # while find mirror return number
+    axis_for_horizontal = check_horizontal(board)
+
+    if len(axis_for_horizontal) > 0:
+        for axle in axis_for_horizontal:
+            if is_mirrored(transformed_to_vertical_test, axle):
+                return axle[0] * 100
+
+    return 0
+
+
+assert 4 == recognize_axis(test_data_vertical)
