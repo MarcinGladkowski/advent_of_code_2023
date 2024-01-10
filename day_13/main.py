@@ -1,16 +1,23 @@
+import logging
 from pprint import pprint
 from shared.main import load_data
 
+logging.basicConfig(level=logging.DEBUG)
+
 data = load_data('input.txt')
+
 
 def generate_boards(raw_data):
     boards = []
 
+    next_board = []
     for row in raw_data:
         if row == '':
+            boards.append(next_board)
+            next_board = []
             continue
 
-        boards.append([x for x in row])
+        next_board.append([x for x in row])
 
     return boards
 
@@ -139,7 +146,7 @@ def recognize_axis(board: list):
     if len(axis_for_vertical) > 0:
         for axle in axis_for_vertical:
             if is_mirrored(transformed_to_vertical_test, axle):
-                return axle[0] + 1
+                return axle[0] + 1, 'VERTICAL'
 
     # test all axis for mirrors horizontal
     # while find mirror return number
@@ -147,22 +154,40 @@ def recognize_axis(board: list):
 
     if len(axis_for_horizontal) > 0:
         for axle in axis_for_horizontal:
-            if is_mirrored(axis_for_horizontal, axle):
-                return (axle[0] + 1) * 100
+            if is_mirrored(board, axle):
+                return (axle[0] + 1) * 100, 'HORIZONTAL'
 
-    return 0
+    return 0, None
 
 
-assert 5 == recognize_axis(test_data_vertical)
-assert 400 == recognize_axis(test_data_horizontal)
+assert 5 == recognize_axis(test_data_vertical)[0]
+assert 400 == recognize_axis(test_data_horizontal)[0]
 
 
 def calculate_sum(boards: list) -> int:
     result = 0
-    for board in boards:
-        result += recognize_axis(board)
+    for i, board in enumerate(boards):
+        mirror_result, recognized_mirroring = recognize_axis(board)
+        logging.debug(f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}")
+        result += mirror_result
 
     return result
 
 
-assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
+# assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
+
+
+"""
+too low: 24211, 28611
+"""
+input_data = generate_boards(data)
+
+wrong = input_data[98]
+pprint(wrong)
+
+pprint(recognize_axis(wrong))
+
+exit()
+
+pprint(f"boards count: {len(input_data)}")
+pprint(calculate_sum(input_data))
