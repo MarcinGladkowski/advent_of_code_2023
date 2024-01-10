@@ -140,3 +140,14 @@ def recognize_axis(board: list):
 
 assert 5 == recognize_axis(test_data_vertical)
 assert 400 == recognize_axis(test_data_horizontal)
+
+
+def calculate_sum(boards: list) -> int:
+    result = 0
+    for board in boards:
+        result += recognize_axis(board)
+
+    return result
+
+
+assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
