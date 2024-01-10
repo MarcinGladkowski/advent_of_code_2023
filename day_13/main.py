@@ -1,4 +1,19 @@
 from pprint import pprint
+from shared.main import load_data
+
+data = load_data('input.txt')
+
+def generate_boards(raw_data):
+    boards = []
+
+    for row in raw_data:
+        if row == '':
+            continue
+
+        boards.append([x for x in row])
+
+    return boards
+
 
 test_data_vertical = [
     ['#', '.', '#', '#', '.', '.', '#', '#', '.'],
