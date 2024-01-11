@@ -4,7 +4,7 @@ from typing import Tuple, Any
 
 from shared.main import load_data
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 data = load_data('input.txt')
 
@@ -170,14 +170,14 @@ def recognize_axis(board: list):
                 axis['HORIZONTAL'] = (axle[0] + 1) * 100
                 break
 
-    type = ''
+    recognize_type = ''
     result = 0
 
     for key, value in axis.items():
         result += value
-        type += '| ' + key
+        recognize_type += ' | ' + key + ' ' + str(value)
 
-    return result, ''
+    return result, recognize_type
 
 
 assert 5 == recognize_axis(test_data_vertical)[0]
@@ -214,3 +214,27 @@ assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
 
 input_data = generate_boards(data)
 assert 33520 == calculate_sum(input_data) # part 1
+
+test_input_1_vertical_part_2 = [
+    ['.', '.', '#', '#', '.', '.', '#', '#', '.'], # element at position 0,0 was changed from # to .
+    ['.', '.', '#', '.', '#', '#', '.', '#', '.'],
+    ['#', '#', '.', '.', '.', '.', '.', '.', '#'],
+    ['#', '#', '.', '.', '.', '.', '.', '.', '#'],
+    ['.', '.', '#', '.', '#', '#', '.', '#', '.'],
+    ['.', '.', '#', '#', '.', '.', '#', '#', '.'],
+    ['#', '.', '#', '.', '#', '#', '.', '#', '.'],
+]
+
+assert 305 == recognize_axis(test_input_1_vertical_part_2)[0]
+
+
+
+
+
+
+
+
+
+
+
+
