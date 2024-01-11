@@ -1,5 +1,7 @@
 import logging
 from pprint import pprint
+from typing import Tuple, Any
+
 from shared.main import load_data
 
 logging.basicConfig(level=logging.DEBUG)
@@ -11,7 +13,11 @@ def generate_boards(raw_data):
     boards = []
 
     next_board = []
-    for row in raw_data:
+    for i, row in enumerate(raw_data):
+        """
+            Added two \\n at the input data
+            Needs to check when the file is ending
+        """
         if row == '':
             boards.append(next_board)
             next_board = []
@@ -143,10 +149,16 @@ def recognize_axis(board: list):
 
     axis_for_vertical = check_vertical(transformed_to_vertical_test)
 
+    axis = {
+        'VERTICAL': None,
+        'HORIZONTAL': None,
+    }
+
     if len(axis_for_vertical) > 0:
         for axle in axis_for_vertical:
             if is_mirrored(transformed_to_vertical_test, axle):
-                return axle[0] + 1, 'VERTICAL'
+                axis['VERTICAL'] = axle[0] + 1
+                break
 
     # test all axis for mirrors horizontal
     # while find mirror return number
@@ -155,20 +167,46 @@ def recognize_axis(board: list):
     if len(axis_for_horizontal) > 0:
         for axle in axis_for_horizontal:
             if is_mirrored(board, axle):
-                return (axle[0] + 1) * 100, 'HORIZONTAL'
+                axis['HORIZONTAL'] = (axle[0] + 1) * 100
+                break
 
-    return 0, None
+    type = ''
+    result = 0
 
+    for key, value in axis.items():
+        result += value
+        type += '| ' + key
+
+    return result, ''
+
+
+print(recognize_axis(test_data_vertical))
 
 assert 5 == recognize_axis(test_data_vertical)[0]
 assert 400 == recognize_axis(test_data_horizontal)[0]
 
 
+def write_processed_board(handler: Any, board: list, metadata: str):
+    """mark axle on board and write to file"""
+    handler.write('\n')
+    handler.write(metadata + '\n')
+    for row in board:
+        handler.write(''.join(row) + '\n')
+    handler.write('\n')
+
+
 def calculate_sum(boards: list) -> int:
+    f = open("debug.txt", "w")
     result = 0
     for i, board in enumerate(boards):
-        mirror_result, recognized_mirroring = recognize_axis(board)
-        logging.debug(f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}")
+        mirror_result, recognized_mirroring, middle_axle = recognize_axis(board)
+
+        msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring} | axle coords {middle_axle}"
+
+        logging.debug(msg)
+
+        write_processed_board(f, board, msg)
+
         result += mirror_result
 
     return result
@@ -178,16 +216,15 @@ def calculate_sum(boards: list) -> int:
 
 
 """
-too low: 24211, 28611
+too low: 24211, 28611, 28614
+
+Board int 26 - Do I have to sum both axis if mirroring is both vertical and horizontal?
 """
 input_data = generate_boards(data)
 
-wrong = input_data[98]
-pprint(wrong)
-
-pprint(recognize_axis(wrong))
+both_axis = input_data[26]
 
 exit()
 
-pprint(f"boards count: {len(input_data)}")
-pprint(calculate_sum(input_data))
+print(f"boards count: {len(input_data)}")
+print(calculate_sum(input_data))
