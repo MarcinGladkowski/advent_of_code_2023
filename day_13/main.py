@@ -108,7 +108,7 @@ def is_mirrored(columns: list, middle: tuple[int, int]) -> bool:
     """
     counter_down, counter_up = middle
 
-    for i in range(counter_down):
+    for i in range(counter_down + 1):
         row_left = counter_down - i
         row_right = counter_up + i
 
@@ -150,8 +150,8 @@ def recognize_axis(board: list):
     axis_for_vertical = check_vertical(transformed_to_vertical_test)
 
     axis = {
-        'VERTICAL': None,
-        'HORIZONTAL': None,
+        'VERTICAL': 0,
+        'HORIZONTAL': 0,
     }
 
     if len(axis_for_vertical) > 0:
@@ -180,8 +180,6 @@ def recognize_axis(board: list):
     return result, ''
 
 
-print(recognize_axis(test_data_vertical))
-
 assert 5 == recognize_axis(test_data_vertical)[0]
 assert 400 == recognize_axis(test_data_horizontal)[0]
 
@@ -199,9 +197,9 @@ def calculate_sum(boards: list) -> int:
     f = open("debug.txt", "w")
     result = 0
     for i, board in enumerate(boards):
-        mirror_result, recognized_mirroring, middle_axle = recognize_axis(board)
+        mirror_result, recognized_mirroring = recognize_axis(board)
 
-        msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring} | axle coords {middle_axle}"
+        msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}"
 
         logging.debug(msg)
 
@@ -212,19 +210,7 @@ def calculate_sum(boards: list) -> int:
     return result
 
 
-# assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
+assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
 
-
-"""
-too low: 24211, 28611, 28614
-
-Board int 26 - Do I have to sum both axis if mirroring is both vertical and horizontal?
-"""
 input_data = generate_boards(data)
-
-both_axis = input_data[26]
-
-exit()
-
-print(f"boards count: {len(input_data)}")
-print(calculate_sum(input_data))
+assert 33520 == calculate_sum(input_data) # part 1
