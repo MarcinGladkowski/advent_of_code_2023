@@ -4,7 +4,7 @@ from typing import Tuple, Any
 
 from shared.main import load_data
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 data = load_data('input.txt')
 
@@ -250,4 +250,20 @@ def smugs_replacer(board: list):
 
     for i in range(rows_length):
         for j in range(row_length):
-            recognize_axis(board)
+
+            smug = i, j
+
+            logging.debug(f"Smug {smug}")
+
+            new_board = set_smug(board, smug)
+            smug_result, recon_type = recognize_axis(new_board)
+
+            if smug_result > 0:
+                return smug_result
+
+
+assert 305 == smugs_replacer(test_data_vertical) # test data has both reflections
+
+print(
+    smugs_replacer(test_data_horizontal)
+)
