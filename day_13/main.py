@@ -213,10 +213,10 @@ def calculate_sum(boards: list) -> int:
 assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
 
 input_data = generate_boards(data)
-assert 33520 == calculate_sum(input_data) # part 1
+assert 33520 == calculate_sum(input_data)  # part 1
 
 test_input_1_vertical_part_2 = [
-    ['.', '.', '#', '#', '.', '.', '#', '#', '.'], # element at position 0,0 was changed from # to .
+    ['.', '.', '#', '#', '.', '.', '#', '#', '.'],  # element at position 0,0 was changed from # to .
     ['.', '.', '#', '.', '#', '#', '.', '#', '.'],
     ['#', '#', '.', '.', '.', '.', '.', '.', '#'],
     ['#', '#', '.', '.', '.', '.', '.', '.', '#'],
@@ -228,13 +228,24 @@ test_input_1_vertical_part_2 = [
 assert 305 == recognize_axis(test_input_1_vertical_part_2)[0]
 
 
+def set_smug(board: list, smug: tuple[int, int]):
+    """
+    smug contains coords y,x (row, col)
+    """
+    board_copy = board[:]
+    current = board_copy[smug[0]][smug[1]]
+    board_copy[smug[0]][smug[1]] = '.' if current == '#' else '.'
+    return board_copy
 
 
+assert set_smug(test_data_vertical, (0, 0)) == test_input_1_vertical_part_2
 
 
+def smugs_replacer(board: list):
+    """
+    Upon closer inspection, you discover that every mirror has exactly one smudge: exactly one . or # should be the opposite type.
+    """
+    rows_length = len(board)
+    row_length = len(board[0])
 
-
-
-
-
-
+    recognize_axis(board)
