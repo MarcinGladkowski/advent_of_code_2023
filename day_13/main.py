@@ -248,4 +248,6 @@ def smugs_replacer(board: list):
     rows_length = len(board)
     row_length = len(board[0])
 
-    recognize_axis(board)
+    for i in range(rows_length):
+        for j in range(row_length):
+            recognize_axis(board)
