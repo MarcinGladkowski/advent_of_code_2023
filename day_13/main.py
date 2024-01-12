@@ -164,7 +164,7 @@ def horizontal_mirroring_check(board: list):
     return 0, ''
 
 
-def recognize_axis(board: list):
+def recognize_axis(board: list, vertical_switch: bool = True, horizontal_switch: bool = True):
     """
     Solution based on indexes!
 
@@ -173,8 +173,8 @@ def recognize_axis(board: list):
     """
 
     axis = {
-        'VERTICAL': vertical_mirroring_check(board)[0],
-        'HORIZONTAL': horizontal_mirroring_check(board)[0],
+        'VERTICAL': vertical_mirroring_check(board)[0] if vertical_switch else 0,
+        'HORIZONTAL': horizontal_mirroring_check(board)[0] if horizontal_switch else 0,
     }
 
     recognize_type = ''
