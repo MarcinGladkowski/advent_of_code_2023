@@ -134,13 +134,7 @@ assert is_mirrored(transformed_test_data_vertical, (2, 3)) == False
 assert is_mirrored(transformed_test_data_vertical, (6, 7)) == False
 
 
-def recognize_axis(board: list):
-    """
-    Solution based on indexes!
-
-    We have to check two axis as once and get only
-    that one which touch an at least one edge.
-    """
+def vertical_mirroring_check(board: list):
     # transform data (for vertical testing)
     # get all middle axis
     # test all axis for mirrors vertical
@@ -149,16 +143,25 @@ def recognize_axis(board: list):
 
     axis_for_vertical = check_vertical(transformed_to_vertical_test)
 
-    axis = {
-        'VERTICAL': 0,
-        'HORIZONTAL': 0,
-    }
-
     if len(axis_for_vertical) > 0:
         for axle in axis_for_vertical:
             if is_mirrored(transformed_to_vertical_test, axle):
-                axis['VERTICAL'] = axle[0] + 1
-                break
+                return axle[0] + 1, 'VERTICAL'
+
+    return 0, ''
+
+def recognize_axis(board: list):
+    """
+    Solution based on indexes!
+
+    We have to check two axis as once and get only
+    that one which touch an at least one edge.
+    """
+
+    axis = {
+        'VERTICAL': vertical_mirroring_check(board)[0],
+        'HORIZONTAL': 0,
+    }
 
     # test all axis for mirrors horizontal
     # while find mirror return number
