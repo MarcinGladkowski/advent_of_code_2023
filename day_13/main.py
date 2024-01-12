@@ -150,6 +150,20 @@ def vertical_mirroring_check(board: list):
 
     return 0, ''
 
+
+def horizontal_mirroring_check(board: list):
+    # test all axis for mirrors horizontal
+    # while find mirror return number
+    axis_for_horizontal = check_horizontal(board)
+
+    if len(axis_for_horizontal) > 0:
+        for axle in axis_for_horizontal:
+            if is_mirrored(board, axle):
+                return (axle[0] + 1) * 100, 'HORIZONTAL'
+
+    return 0, ''
+
+
 def recognize_axis(board: list):
     """
     Solution based on indexes!
@@ -160,18 +174,8 @@ def recognize_axis(board: list):
 
     axis = {
         'VERTICAL': vertical_mirroring_check(board)[0],
-        'HORIZONTAL': 0,
+        'HORIZONTAL': horizontal_mirroring_check(board)[0],
     }
-
-    # test all axis for mirrors horizontal
-    # while find mirror return number
-    axis_for_horizontal = check_horizontal(board)
-
-    if len(axis_for_horizontal) > 0:
-        for axle in axis_for_horizontal:
-            if is_mirrored(board, axle):
-                axis['HORIZONTAL'] = (axle[0] + 1) * 100
-                break
 
     recognize_type = ''
     result = 0
@@ -265,7 +269,7 @@ def smugs_replacer(board: list):
                 return smug_result
 
 
-assert 305 == smugs_replacer(test_data_vertical) # test data has both reflections
+assert 305 == smugs_replacer(test_data_vertical)  # test data has both reflections
 
 print(
     smugs_replacer(test_data_horizontal)
