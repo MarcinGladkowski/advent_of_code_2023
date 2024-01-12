@@ -262,19 +262,28 @@ def smugs_replacer(board: list):
     for i in range(rows_length):
         for j in range(row_length):
             smug = i, j
-            logging.debug(f"Smug {smug}")
+            # logging.debug(f"Smug {smug}")
             new_board = set_smug(board, smug)
-            smug_result, recon_type, smugged_coords = recognize_axis(new_board, False, True)
+            smug_result, recon_type, smugged_coords = recognize_axis(new_board)
 
             if smug_result > 0 and coords != smugged_coords:
+                logging.debug(f"{smug_result}{recon_type} | {smugged_coords}")
                 return smug_result
 
+    return 0
 
-# assert 300 == smugs_replacer(test_data_vertical)  # test data has both reflections
-print(
-    smugs_replacer(test_data_vertical)
-)
 
-print(
-    smugs_replacer(test_data_horizontal)
-)
+assert 305 == smugs_replacer(test_data_vertical)  # test data has both reflections
+assert 100 == smugs_replacer(test_data_horizontal)
+
+
+def smugs_replacer_sum(boards: list):
+    smugs_result = 0
+    for i, board in enumerate(boards):
+        smugs_result += smugs_replacer(board)
+    return smugs_result
+
+"""
+too low: 8835
+"""
+print(smugs_replacer_sum(generate_boards(data)))
