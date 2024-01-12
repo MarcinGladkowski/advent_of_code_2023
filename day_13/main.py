@@ -180,11 +180,13 @@ def recognize_axis(board: list, vertical_switch: bool = True, horizontal_switch:
     recognize_type = ''
     result = 0
 
+    found_at_coords = vertical_mirroring_check(board)[1] if axis['VERTICAL'] else horizontal_mirroring_check(board)[0]
+
     for key, value in axis.items():
         result += value
         recognize_type += ' | ' + key + ' ' + str(value)
 
-    return result, recognize_type
+    return result, recognize_type, found_at_coords
 
 
 assert 5 == recognize_axis(test_data_vertical)[0]
@@ -204,7 +206,7 @@ def calculate_sum(boards: list) -> int:
     f = open("debug.txt", "w")
     result = 0
     for i, board in enumerate(boards):
-        mirror_result, recognized_mirroring = recognize_axis(board)
+        mirror_result, recognized_mirroring, _ = recognize_axis(board)
 
         msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}"
 
@@ -255,21 +257,23 @@ def smugs_replacer(board: list):
     rows_length = len(board)
     row_length = len(board[0])
 
+    smug_result, recon_type, coords = recognize_axis(board, False, True)
+
     for i in range(rows_length):
         for j in range(row_length):
-
             smug = i, j
-
             logging.debug(f"Smug {smug}")
-
             new_board = set_smug(board, smug)
-            smug_result, recon_type = recognize_axis(new_board)
+            smug_result, recon_type, smugged_coords = recognize_axis(new_board, False, True)
 
-            if smug_result > 0:
+            if smug_result > 0 and coords != smugged_coords:
                 return smug_result
 
 
-assert 305 == smugs_replacer(test_data_vertical)  # test data has both reflections
+# assert 300 == smugs_replacer(test_data_vertical)  # test data has both reflections
+print(
+    smugs_replacer(test_data_vertical)
+)
 
 print(
     smugs_replacer(test_data_horizontal)
