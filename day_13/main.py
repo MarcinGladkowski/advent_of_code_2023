@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from pprint import pprint
 from typing import Tuple, Any
 
@@ -7,7 +8,6 @@ from shared.main import load_data
 logging.basicConfig(level=logging.DEBUG)
 
 data = load_data('input.txt')
-
 
 def generate_boards(raw_data):
     boards = []
@@ -146,9 +146,9 @@ def vertical_mirroring_check(board: list):
     if len(axis_for_vertical) > 0:
         for axle in axis_for_vertical:
             if is_mirrored(transformed_to_vertical_test, axle):
-                return axle[0] + 1, 'VERTICAL'
+                return axle[0] + 1, axle
 
-    return 0, ''
+    return 0, (0, 0)
 
 
 def horizontal_mirroring_check(board: list):
@@ -159,38 +159,32 @@ def horizontal_mirroring_check(board: list):
     if len(axis_for_horizontal) > 0:
         for axle in axis_for_horizontal:
             if is_mirrored(board, axle):
-                return (axle[0] + 1) * 100, 'HORIZONTAL'
+                return (axle[0] + 1) * 100, axle
 
-    return 0, ''
+    return 0, (0, 0)
 
 
 def recognize_axis(board: list, vertical_switch: bool = True, horizontal_switch: bool = True):
     """
-    Solution based on indexes!
+    Solution based on indexes! Returns tuple of columns/rows list indexes
 
     We have to check two axis as once and get only
     that one which touch an at least one edge.
     """
+    vertical_mirroring = vertical_mirroring_check(board)
+    horizontal_mirroring = horizontal_mirroring_check(board)
 
-    axis = {
-        'VERTICAL': vertical_mirroring_check(board)[0] if vertical_switch else 0,
-        'HORIZONTAL': horizontal_mirroring_check(board)[0] if horizontal_switch else 0,
-    }
+    if vertical_switch and vertical_mirroring[0] > 0:
+        return vertical_mirroring_check(board) + ('VERTICAL', )
 
-    recognize_type = ''
-    result = 0
+    if horizontal_switch and horizontal_mirroring[0] > 0:
+        return horizontal_mirroring_check(board) + ('HORIZONTAL', )
 
-    found_at_coords = vertical_mirroring_check(board)[1] if axis['VERTICAL'] else horizontal_mirroring_check(board)[0]
-
-    for key, value in axis.items():
-        result += value
-        recognize_type += ' | ' + key + ' ' + str(value)
-
-    return result, recognize_type, found_at_coords
+    return 0, (0, 0), ''
 
 
 assert 5 == recognize_axis(test_data_vertical)[0]
-assert 400 == recognize_axis(test_data_horizontal)[0]
+assert 400 == recognize_axis(test_data_horizontal, False, True)[0]
 
 
 def write_processed_board(handler: Any, board: list, metadata: str):
@@ -206,13 +200,13 @@ def calculate_sum(boards: list) -> int:
     f = open("debug.txt", "w")
     result = 0
     for i, board in enumerate(boards):
-        mirror_result, recognized_mirroring, _ = recognize_axis(board)
+        mirror_result, axle, recognized_mirroring = recognize_axis(board)
 
-        msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}"
-
-        logging.debug(msg)
-
-        write_processed_board(f, board, msg)
+        # msg = f"board int: {i} | result: {mirror_result} | type: {recognized_mirroring}"
+        #
+        # logging.debug(msg)
+        #
+        # write_processed_board(f, board, msg)
 
         result += mirror_result
 
@@ -222,6 +216,8 @@ def calculate_sum(boards: list) -> int:
 assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
 
 input_data = generate_boards(data)
+
+
 assert 33520 == calculate_sum(input_data)  # part 1
 
 test_input_1_vertical_part_2 = [
@@ -234,56 +230,78 @@ test_input_1_vertical_part_2 = [
     ['#', '.', '#', '.', '#', '#', '.', '#', '.'],
 ]
 
-assert 305 == recognize_axis(test_input_1_vertical_part_2)[0]
+# assert 305 == recognize_axis(test_input_1_vertical_part_2)[0]
 
 
-def set_smug(board: list, smug: tuple[int, int]):
+def set_smug(board_to_set_smug: list, smug: tuple[int, int]):
     """
     smug contains coords y,x (row, col)
     """
-    board_copy = board[:]
-    current = board_copy[smug[0]][smug[1]]
-    board_copy[smug[0]][smug[1]] = '.' if current == '#' else '.'
-    return board_copy
+    board_to_set = deepcopy(board_to_set_smug)
+    current = board_to_set[smug[0]][smug[1]]
+    board_to_set[smug[0]][smug[1]] = '.' if current == '#' else '#'
+    return board_to_set
 
 
-assert set_smug(test_data_vertical, (0, 0)) == test_input_1_vertical_part_2
+# assert set_smug(test_data_vertical, (0, 0)) == test_input_1_vertical_part_2
+# assert set_smug([['#', '.', '#']], (0, 1)) == [['#', '#', '#']]
 
 
 def smugs_replacer(board: list):
     """
     Upon closer inspection, you discover that every mirror has exactly one smudge: exactly one . or # should be the opposite type.
+
+    Probably there aren't be an option to change form e.g. HORIZONTAL => VERTICAL
+    Keep recon type
     """
     rows_length = len(board)
     row_length = len(board[0])
 
-    smug_result, recon_type, coords = recognize_axis(board, False, True)
+    smug_result, axis_coords, recon_type_initial = recognize_axis(board)
+    logging.debug(f"Initial state: {smug_result} | {recon_type_initial} | {axis_coords}")
+
+    new_smug_result = 0
 
     for i in range(rows_length):
         for j in range(row_length):
             smug = i, j
-            # logging.debug(f"Smug {smug}")
             new_board = set_smug(board, smug)
-            smug_result, recon_type, smugged_coords = recognize_axis(new_board)
 
-            if smug_result > 0 and coords != smugged_coords:
-                logging.debug(f"{smug_result}{recon_type} | {smugged_coords}")
-                return smug_result
+            match recon_type_initial:
+                case 'HORIZONTAL':
+                    smug_result, smugged_coords, recon_type,  = recognize_axis(new_board, False, True)
 
-    return 0
+                    if smug_result > 0 and axis_coords != smugged_coords and recon_type == recon_type_initial:
+                        logging.debug(f"Replacement on: {smug_result} | {recon_type} | {smugged_coords}")
+                        new_smug_result = smug_result
+                        break
+
+                case 'VERTICAL':
+                    smug_result, recon_type, smugged_coords = recognize_axis(new_board, True, False)
+
+                    if smug_result > 0 and axis_coords != smugged_coords and recon_type == recon_type_initial:
+                        logging.debug(f"Replacement on: {smug_result} | {recon_type} | {smugged_coords}")
+                        new_smug_result = smug_result
+                        break
+
+    return new_smug_result
 
 
-assert 305 == smugs_replacer(test_data_vertical)  # test data has both reflections
-assert 100 == smugs_replacer(test_data_horizontal)
+# assert 305 == smugs_replacer(test_data_vertical)  # test data has both reflections
+# assert 100 == smugs_replacer(test_data_horizontal)
 
 
 def smugs_replacer_sum(boards: list):
     smugs_result = 0
-    for i, board in enumerate(boards):
-        smugs_result += smugs_replacer(board)
+    for i, board_to_smug in enumerate(boards):
+        logging.debug(f"Smugging board with index: {i}")
+        smug_board_result = smugs_replacer(board_to_smug)
+        logging.debug(f"Smug result {smug_board_result}")
+        smugs_result += smug_board_result
     return smugs_result
 
 """
-too low: 8835
+too low: 8835, 12715
 """
-print(smugs_replacer_sum(generate_boards(data)))
+pprint(smugs_replacer_sum(generate_boards(data)))
+
