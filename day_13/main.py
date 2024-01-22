@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 data = load_data('input.txt')
 
+
 def generate_boards(raw_data):
     boards = []
 
@@ -164,6 +165,22 @@ def horizontal_mirroring_check(board: list):
     return 0, (0, 0)
 
 
+def vertical_mirroring(board: list):
+    vertical_mirroring_result = vertical_mirroring_check(board)
+
+    if vertical_mirroring_result[0] > 0:
+        return vertical_mirroring_result + ('VERTICAL',)
+    return 0, (0, 0), ''
+
+
+def horizontal_mirroring(board: list):
+    horizontal_mirroring_result = horizontal_mirroring_check(board)
+
+    if horizontal_mirroring_result[0] > 0:
+        return horizontal_mirroring_result + ('HORIZONTAL',)
+    return 0, (0, 0), ''
+
+
 def recognize_axis(board: list, vertical_switch: bool = True, horizontal_switch: bool = True):
     """
     Solution based on indexes! Returns tuple of columns/rows list indexes
@@ -175,10 +192,10 @@ def recognize_axis(board: list, vertical_switch: bool = True, horizontal_switch:
     horizontal_mirroring = horizontal_mirroring_check(board)
 
     if vertical_switch and vertical_mirroring[0] > 0:
-        return vertical_mirroring_check(board) + ('VERTICAL', )
+        return vertical_mirroring_check(board) + ('VERTICAL',)
 
     if horizontal_switch and horizontal_mirroring[0] > 0:
-        return horizontal_mirroring_check(board) + ('HORIZONTAL', )
+        return horizontal_mirroring_check(board) + ('HORIZONTAL',)
 
     return 0, (0, 0), ''
 
@@ -217,7 +234,6 @@ assert 405 == calculate_sum([test_data_vertical, test_data_horizontal])
 
 input_data = generate_boards(data)
 
-
 assert 33520 == calculate_sum(input_data)  # part 1
 
 test_input_1_vertical_part_2 = [
@@ -229,6 +245,7 @@ test_input_1_vertical_part_2 = [
     ['.', '.', '#', '#', '.', '.', '#', '#', '.'],
     ['#', '.', '#', '.', '#', '#', '.', '#', '.'],
 ]
+
 
 # assert 305 == recognize_axis(test_input_1_vertical_part_2)[0]
 
@@ -257,32 +274,27 @@ def smugs_replacer(board: list):
     rows_length = len(board)
     row_length = len(board[0])
 
-    smug_result, axis_coords, recon_type_initial = recognize_axis(board)
-    logging.debug(f"Initial state: {smug_result} | {recon_type_initial} | {axis_coords}")
+    smug_result, initial_coords, recon_type_initial = recognize_axis(board)
+    logging.debug(f"Initial state: {smug_result} | {recon_type_initial} | {initial_coords}")
 
     new_smug_result = 0
 
     for i in range(rows_length):
         for j in range(row_length):
-            smug = i, j
-            new_board = set_smug(board, smug)
+            new_board = set_smug(board, (i, j))
+            smug_result, smugged_coords, recon_type, = horizontal_mirroring(new_board)
 
-            match recon_type_initial:
-                case 'HORIZONTAL':
-                    smug_result, smugged_coords, recon_type,  = recognize_axis(new_board, False, True)
+            if smug_result > 0 and initial_coords != smugged_coords:
+                logging.debug(f"Replacement on horizontal: {smug_result} | {recon_type} | {smugged_coords}")
+                new_smug_result = smug_result
+                break
 
-                    if smug_result > 0 and axis_coords != smugged_coords and recon_type == recon_type_initial:
-                        logging.debug(f"Replacement on: {smug_result} | {recon_type} | {smugged_coords}")
-                        new_smug_result = smug_result
-                        break
+            smug_result, smugged_coords, recon_type, = vertical_mirroring(new_board)
 
-                case 'VERTICAL':
-                    smug_result, recon_type, smugged_coords = recognize_axis(new_board, True, False)
-
-                    if smug_result > 0 and axis_coords != smugged_coords and recon_type == recon_type_initial:
-                        logging.debug(f"Replacement on: {smug_result} | {recon_type} | {smugged_coords}")
-                        new_smug_result = smug_result
-                        break
+            if smug_result > 0 and initial_coords != smugged_coords:
+                logging.debug(f"Replacement on vertical: {smug_result} | {recon_type} | {smugged_coords}")
+                new_smug_result = smug_result
+                break
 
     return new_smug_result
 
@@ -300,8 +312,18 @@ def smugs_replacer_sum(boards: list):
         smugs_result += smug_board_result
     return smugs_result
 
-"""
-too low: 8835, 12715
-"""
-pprint(smugs_replacer_sum(generate_boards(data)))
 
+"""
+Part II
+too low: 8835, 12715
+incorrect = 23222
+"""
+# (3, 7) vertical
+# board_98 = generate_boards(data)[98]
+# smugged_98 = set_smug(board_98, (3, 7))
+# mirror_98 = vertical_mirroring(smugged_98)
+# pprint(smugs_replacer(board_98))
+
+
+# exit()
+pprint(smugs_replacer_sum(generate_boards(data)))
