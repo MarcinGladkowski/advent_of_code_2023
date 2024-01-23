@@ -67,10 +67,6 @@ assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.']
 assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.']
         == slide(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
 
-input = load_data('input.txt')
-# pivot
-data = [[_ for _ in x] for x in input]
-
 
 def slide_board(board: list):
     return [slide(row) for row in board]
@@ -88,3 +84,12 @@ def count_stones_load(board: list) -> int:
 
 
 assert 136 == count_stones_load(pivot_slide_board)
+
+input = load_data('input.txt')
+# pivot
+data = [[_ for _ in x] for x in input]
+
+pivot_slide_board_data = slide_board(pivot(data))
+
+
+assert 109939 == count_stones_load(pivot_slide_board_data)
