@@ -1,5 +1,7 @@
 from pprint import pprint
 
+from shared.main import load_data
+
 test_input = [
     ['O', '.', '.', '.', '.', '#', '.', '.', '.', '.'],
     ['O', '.', 'O', 'O', '#', '.', '.', '.', '.', '#'],
@@ -15,6 +17,9 @@ test_input = [
 
 
 def pivot(board: list) -> list:
+    """
+    For easiest operating ont
+    """
     pivot_board = [[] for _ in range(len(board[0]))]
 
     for j, row in enumerate(board):
@@ -51,9 +56,35 @@ def slide(row: list) -> list:
     """
     ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
     """
-    square_rocks_partials = ''.join(row).split('#') # test if separating rows is more than one ###
+    square_rocks_partials = ''.join(row).split('#')  # test if separating rows is more than one ###
     result = '#'.join([''.join(slide_partial(row)) for row in square_rocks_partials])
     return [_ for _ in result]
 
 
-slide(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O'])
+assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.']
+        == slide(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
+
+assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.']
+        == slide(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+
+input = load_data('input.txt')
+# pivot
+data = [[_ for _ in x] for x in input]
+
+
+def slide_board(board: list):
+    return [slide(row) for row in board]
+
+
+pivot_slide_board = slide_board(pivot(test_input))
+
+
+def count_stones_load(board: list) -> int:
+    total_load = 0
+    for row in board:
+        total_load += sum([len(row) - i for i, el in enumerate(row) if el == 'O'])
+
+    return total_load
+
+
+assert 136 == count_stones_load(pivot_slide_board)
