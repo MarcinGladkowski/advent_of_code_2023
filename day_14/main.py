@@ -27,8 +27,7 @@ def pivot(board: list) -> list:
 pivoted = pivot(test_input)
 
 
-def slide_north(row: list):
-
+def slide_partial(row: list):
     stones_count = len(list(filter(lambda x: x == 'O', row)))
 
     new_row = []
@@ -44,4 +43,17 @@ def slide_north(row: list):
     return new_row
 
 
-assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial(
+    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+
+
+def slide(row: list) -> list:
+    """
+    ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
+    """
+    square_rocks_partials = ''.join(row).split('#')
+    result = '#'.join([''.join(slide_partial(row)) for row in square_rocks_partials])
+    return [_ for _ in result]
+
+
+slide(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O'])
