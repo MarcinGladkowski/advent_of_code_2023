@@ -18,7 +18,8 @@ test_input = [
 
 def pivot(board: list) -> list:
     """
-    For easiest operating ont
+        Allows to easy move stones north
+        Pivot to horizontal view
     """
     pivot_board = [[] for _ in range(len(board[0]))]
 
@@ -30,6 +31,12 @@ def pivot(board: list) -> list:
 
 
 pivoted = pivot(test_input)
+
+pivoted_second_time = pivot(pivoted)
+
+pprint(pivoted_second_time)
+
+assert pivoted != test_input
 
 
 def slide_partial(row: list):
@@ -68,11 +75,11 @@ assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.']
         == slide(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
 
 
-def slide_board(board: list):
+def slide_board_north(board: list):
     return [slide(row) for row in board]
 
 
-pivot_slide_board = slide_board(pivot(test_input))
+pivot_slide_board = slide_board_north(pivot(test_input))
 
 
 def count_stones_load(board: list) -> int:
@@ -89,7 +96,6 @@ input = load_data('input.txt')
 # pivot
 data = [[_ for _ in x] for x in input]
 
-pivot_slide_board_data = slide_board(pivot(data))
-
+pivot_slide_board_data = slide_board_north(pivot(data))
 
 assert 109939 == count_stones_load(pivot_slide_board_data)
