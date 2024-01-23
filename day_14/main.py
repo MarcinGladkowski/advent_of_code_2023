@@ -26,4 +26,22 @@ def pivot(board: list) -> list:
 
 pivoted = pivot(test_input)
 
-pprint(pivoted)
+
+def slide_north(row: list):
+
+    stones_count = len(list(filter(lambda x: x == 'O', row)))
+
+    new_row = []
+    for i, el in enumerate(row):
+        if i < stones_count:
+            new_row.append('O')
+            continue
+        if el == 'O':
+            new_row.append('.')
+            continue
+        new_row.append(el)
+
+    return new_row
+
+
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
