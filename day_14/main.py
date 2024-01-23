@@ -51,7 +51,7 @@ def slide(row: list) -> list:
     """
     ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
     """
-    square_rocks_partials = ''.join(row).split('#')
+    square_rocks_partials = ''.join(row).split('#') # test if separating rows is more than one ###
     result = '#'.join([''.join(slide_partial(row)) for row in square_rocks_partials])
     return [_ for _ in result]
 
