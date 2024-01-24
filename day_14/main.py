@@ -30,16 +30,41 @@ def pivot(board: list) -> list:
     return pivot_board
 
 
-pivoted = pivot(test_input)
-
-pivoted_second_time = pivot(pivoted)
-
-pprint(pivoted_second_time)
+pivoted = pivot(test_input) # first pivot
+pivoted_second_time = pivot(pivoted) # second pivot - back to inital state
 
 assert pivoted != test_input
+assert pivoted_second_time == test_input
 
 
-def slide_partial(row: list):
+def slide_partial_left_and_north(row: list):
+    stones_count = list(filter(lambda x: x == 'O', row))
+
+    new_row = []
+    for i, el in enumerate(row):
+        if el == '#':
+            new_row.append('#')
+            continue
+        if stones_count:
+            new_row.append('O')
+            stones_count.pop()
+            continue
+        if el == 'O':
+            new_row.append('.')
+            continue
+        new_row.append(el)
+
+    return new_row
+
+
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+
+pprint(slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#']))
+
+assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+
+
+def slide_partial_right_and_south(row: list):
     stones_count = len(list(filter(lambda x: x == 'O', row)))
 
     new_row = []
@@ -54,9 +79,7 @@ def slide_partial(row: list):
 
     return new_row
 
-
-assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial(
-    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+#pprint(slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#']))
 
 
 def slide(row: list) -> list:
@@ -64,7 +87,7 @@ def slide(row: list) -> list:
     ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
     """
     square_rocks_partials = ''.join(row).split('#')  # test if separating rows is more than one ###
-    result = '#'.join([''.join(slide_partial(row)) for row in square_rocks_partials])
+    result = '#'.join([''.join(slide_partial_left_and_north(row)) for row in square_rocks_partials])
     return [_ for _ in result]
 
 
@@ -91,6 +114,7 @@ def count_stones_load(board: list) -> int:
 
 
 assert 136 == count_stones_load(pivot_slide_board)
+
 
 input = load_data('input.txt')
 # pivot
