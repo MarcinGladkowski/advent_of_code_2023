@@ -58,29 +58,32 @@ def slide_partial_left_and_north(row: list):
 
 
 assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
-
-pprint(slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#']))
-
 assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
 
 def slide_partial_right_and_south(row: list):
-    stones_count = len(list(filter(lambda x: x == 'O', row)))
+    row.reverse()
+    stones_count = list(filter(lambda x: x == 'O', row))
 
     new_row = []
     for i, el in enumerate(row):
-        if i < stones_count:
+        if el == '#':
+            new_row.append('#')
+            continue
+        if stones_count:
             new_row.append('O')
+            stones_count.pop()
             continue
         if el == 'O':
             new_row.append('.')
             continue
         new_row.append(el)
 
+    new_row.reverse()
     return new_row
 
-#pprint(slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#']))
 
+assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
 def slide(row: list) -> list:
     """
