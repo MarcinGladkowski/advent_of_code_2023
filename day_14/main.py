@@ -30,8 +30,8 @@ def pivot(board: list) -> list:
     return pivot_board
 
 
-pivoted = pivot(test_input) # first pivot
-pivoted_second_time = pivot(pivoted) # second pivot - back to inital state
+pivoted = pivot(test_input)  # first pivot
+pivoted_second_time = pivot(pivoted)  # second pivot - back to inital state
 
 assert pivoted != test_input
 assert pivoted_second_time == test_input
@@ -57,8 +57,10 @@ def slide_partial_left_and_north(row: list):
     return new_row
 
 
-assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
-assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
+    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
+    ['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
 
 def slide_partial_right_and_south(row: list):
@@ -83,9 +85,13 @@ def slide_partial_right_and_south(row: list):
     return new_row
 
 
-assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(
+    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
-def slide(row: list) -> list:
+assert ['.', 'O', 'O'] == slide_partial_right_and_south(['O', '.', 'O'])
+assert ['O', '#', 'O'] == slide_partial_right_and_south(['O', '#', 'O'])
+
+def slide_row_north_east(row: list) -> list:
     """
     ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
     """
@@ -94,18 +100,41 @@ def slide(row: list) -> list:
     return [_ for _ in result]
 
 
+def slide_row_south_east(row: list) -> list:
+    square_rocks_partials = ''.join(row).split('#')  # test if separating rows is more than one ###
+    #result = '#'.join([''.join(slide_row_south_east(row)) for row in square_rocks_partials])
+
+    result = ''
+    for row in square_rocks_partials:
+        result += '#' + ''.join(slide_row_south_east(row))
+
+    return result
+
+    # return [_ for _ in result]
+
+
 assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.']
-        == slide(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
+        == slide_row_north_east(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
 
 assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.']
-        == slide(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+        == slide_row_north_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+
+assert (['.', '.', '.', 'O', '#', '#', '.', '.', 'O', 'O']
+        == slide_row_south_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+
+exit()
 
 
-def slide_board_north(board: list):
-    return [slide(row) for row in board]
+
+def slide_board_north_west(board: list):
+    return [slide_row_north_east(row) for row in board]
 
 
-pivot_slide_board = slide_board_north(pivot(test_input))
+def slide_board_east_south(board: list):
+    return [slide_row_south_east(row) for row in board]
+
+
+pivot_slide_board = slide_board_north_west(pivot(test_input))
 
 
 def count_stones_load(board: list) -> int:
@@ -118,11 +147,71 @@ def count_stones_load(board: list) -> int:
 
 assert 136 == count_stones_load(pivot_slide_board)
 
-
 input = load_data('input.txt')
 # pivot
 data = [[_ for _ in x] for x in input]
 
-pivot_slide_board_data = slide_board_north(pivot(data))
+pivot_slide_board_data = slide_board_north_west(pivot(data))
 
 assert 109939 == count_stones_load(pivot_slide_board_data)
+
+
+def get_direction():
+    directions = ['north', 'west', 'south', 'east']
+    index = 0
+
+    while True:
+        if index >= len(directions):
+            index = 0
+
+        yield directions[index]
+        index += 1
+
+
+directions = get_direction()
+"""Testing generator"""
+next(directions)
+next(directions)
+next(directions)
+next(directions)
+assert 'north' == next(directions)
+
+
+class Cycle:
+    """
+    What is one cycle ?
+    initial move - north (requires one pivot)
+    pivot -> move north
+    pivot ->
+    """
+
+    def __init__(self, board: list):
+        self.board = board
+        self.direction_generator = get_direction()
+        self.direction = next(self.direction_generator)
+        self.pivot()
+
+    def pivot(self):
+        self.board = pivot(self.board)
+
+    def next_direction(self):
+        self.direction = next(self.direction_generator)
+
+    def slide(self):
+        if self.direction == 'north' or self.direction == 'west':
+            self.board = slide_board_north_west(self.board)
+
+        if self.direction == 'south' or self.direction == 'east':
+            self.board = slide_board_east_south(self.board)
+
+        self.pivot()
+        self.next_direction()
+
+
+test_one_cycle = Cycle(test_input)
+test_one_cycle.slide()
+test_one_cycle.slide()
+test_one_cycle.slide()
+test_one_cycle.slide()
+
+pprint(test_one_cycle.board)
