@@ -37,7 +37,7 @@ assert pivoted != test_input
 assert pivoted_second_time == test_input
 
 
-def slide_partial_left_and_north(row: list):
+def slide_partial_left_and_north(row: str):
     stones_count = list(filter(lambda x: x == 'O', row))
 
     new_row = []
@@ -57,14 +57,13 @@ def slide_partial_left_and_north(row: list):
     return new_row
 
 
-assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
-    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
-assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
-    ['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
 
-def slide_partial_right_and_south(row: list):
-    row.reverse()
+def slide_partial_right_and_south(row: str):
+
+    row = row[::-1]
     stones_count = list(filter(lambda x: x == 'O', row))
 
     new_row = []
@@ -81,53 +80,33 @@ def slide_partial_right_and_south(row: list):
             continue
         new_row.append(el)
 
-    new_row.reverse()
+    new_row = new_row[::-1]
     return new_row
 
 
-assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(
-    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
-
+assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 assert ['.', 'O', 'O'] == slide_partial_right_and_south(['O', '.', 'O'])
 assert ['O', '#', 'O'] == slide_partial_right_and_south(['O', '#', 'O'])
 
-def slide_row_north_east(row: list) -> list:
-    """
-    ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']
-    """
-    square_rocks_partials = ''.join(row).split('#')  # test if separating rows is more than one ###
+
+def slide_row_north_west(row: list) -> list:
+    square_rocks_partials = ''.join(row).split('#')
     result = '#'.join([''.join(slide_partial_left_and_north(row)) for row in square_rocks_partials])
     return [_ for _ in result]
 
 
 def slide_row_south_east(row: list) -> list:
-    square_rocks_partials = ''.join(row).split('#')  # test if separating rows is more than one ###
-    #result = '#'.join([''.join(slide_row_south_east(row)) for row in square_rocks_partials])
-
-    result = ''
-    for row in square_rocks_partials:
-        result += '#' + ''.join(slide_row_south_east(row))
-
-    return result
-
-    # return [_ for _ in result]
+    square_rocks_partials = ''.join(row).split('#')
+    result = '#'.join([''.join(slide_partial_right_and_south(row)) for row in square_rocks_partials])
+    return [_ for _ in result]
 
 
-assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.']
-        == slide_row_north_east(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
-
-assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.']
-        == slide_row_north_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
-
-assert (['.', '.', '.', 'O', '#', '#', '.', '.', 'O', 'O']
-        == slide_row_south_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
-
-exit()
-
-
+assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.'] == slide_row_north_west(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
+assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.'] == slide_row_north_west(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+assert (['.', '.', '.', 'O', '#', '#', '.', '.', 'O', 'O'] == slide_row_south_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
 
 def slide_board_north_west(board: list):
-    return [slide_row_north_east(row) for row in board]
+    return [slide_row_north_west(row) for row in board]
 
 
 def slide_board_east_south(board: list):
@@ -208,10 +187,28 @@ class Cycle:
         self.next_direction()
 
 
+# testing cycle mechanism
 test_one_cycle = Cycle(test_input)
 test_one_cycle.slide()
 test_one_cycle.slide()
 test_one_cycle.slide()
 test_one_cycle.slide()
 
-pprint(test_one_cycle.board)
+# why pivot ? - how to asure that side is right ?
+test_one_cycle.pivot()
+
+# test data to compare
+test_set_after_one_cycle = [
+    ['.', '.', '.', '.', '.', '#', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '#', '.', '.', '.', 'O', '#'],
+    ['.', '.', '.', 'O', 'O', '#', '#', '.', '.', '.'],
+    ['.', 'O', 'O', '#', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', 'O', 'O', 'O', '#', '.'],
+    ['.', 'O', '#', '.', '.', '.', 'O', '#', '.', '#'],
+    ['.', '.', '.', '.', 'O', '#', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', 'O', 'O', 'O', 'O'],
+    ['#', '.', '.', '.', 'O', '#', '#', '#', '.', '.'],
+    ['#', '.', '.', 'O', 'O', '#', '.', '.', '.', '.'],
+]
+
+assert test_one_cycle.board == test_set_after_one_cycle
