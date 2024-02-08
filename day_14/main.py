@@ -57,12 +57,13 @@ def slide_partial_left_and_north(row: str):
     return new_row
 
 
-assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
-assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['O', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
+    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['#', 'O', 'O', 'O', '.', '.', '.', '.', '#', '#'] == slide_partial_left_and_north(
+    ['#', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 
 
 def slide_partial_right_and_south(row: str):
-
     row = row[::-1]
     stones_count = list(filter(lambda x: x == 'O', row))
 
@@ -84,7 +85,8 @@ def slide_partial_right_and_south(row: str):
     return new_row
 
 
-assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
+assert ['.', '.', '.', '.', 'O', 'O', 'O', 'O', '#', '#'] == slide_partial_right_and_south(
+    ['O', 'O', '.', 'O', '.', 'O', '.', '.', '#', '#'])
 assert ['.', 'O', 'O'] == slide_partial_right_and_south(['O', '.', 'O'])
 assert ['O', '#', 'O'] == slide_partial_right_and_south(['O', '#', 'O'])
 
@@ -101,9 +103,13 @@ def slide_row_south_east(row: list) -> list:
     return [_ for _ in result]
 
 
-assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.'] == slide_row_north_west(['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
-assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.'] == slide_row_north_west(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
-assert (['.', '.', '.', 'O', '#', '#', '.', '.', 'O', 'O'] == slide_row_south_east(['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+assert (['O', '.', '.', '.', '.', '#', 'O', 'O', '.', '.'] == slide_row_north_west(
+    ['.', '.', 'O', '.', '.', '#', 'O', '.', '.', 'O']))
+assert (['O', '.', '.', '.', '#', '#', 'O', 'O', '.', '.'] == slide_row_north_west(
+    ['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+assert (['.', '.', '.', 'O', '#', '#', '.', '.', 'O', 'O'] == slide_row_south_east(
+    ['.', '.', 'O', '.', '#', '#', 'O', '.', '.', 'O']))
+
 
 def slide_board_north_west(board: list):
     return [slide_row_north_west(row) for row in board]
@@ -190,6 +196,10 @@ class Cycle:
         for _ in range(4):
             self.slide()
 
+    def cycle_times(self, times: int):
+        for _ in range(times):
+            self.cycle()
+
     def get_board(self):
         """
             why pivot ? - how to asure that side is right ? -
@@ -200,9 +210,8 @@ class Cycle:
 
 
 # testing cycle mechanism
-test_one_cycle = Cycle(test_input)
-test_one_cycle.cycle()
-
+test_cycle = Cycle(test_input)
+test_cycle.cycle()
 
 # test data to compare
 test_set_after_one_cycle = [
@@ -218,4 +227,44 @@ test_set_after_one_cycle = [
     ['#', '.', '.', 'O', 'O', '#', '.', '.', '.', '.'],
 ]
 
-assert test_one_cycle.get_board() == test_set_after_one_cycle
+assert test_cycle.get_board() == test_set_after_one_cycle
+
+test_two_cycles = Cycle(test_input)
+test_two_cycles.cycle()
+test_two_cycles.cycle()
+
+test_set_after_second_cycle = [
+    ['.', '.', '.', '.', '.', '#', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '#', '.', '.', '.', 'O', '#'],
+    ['.', '.', '.', '.', '.', '#', '#', '.', '.', '.'],
+    ['.', '.', 'O', '#', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', 'O', 'O', 'O', '#', '.'],
+    ['.', 'O', '#', '.', '.', '.', 'O', '#', '.', '#'],
+    ['.', '.', '.', '.', 'O', '#', '.', '.', '.', 'O'],
+    ['.', '.', '.', '.', '.', '.', '.', 'O', 'O', 'O'],
+    ['#', '.', '.', 'O', 'O', '#', '#', '#', '.', '.'],
+    ['#', '.', 'O', 'O', 'O', '#', '.', '.', '.', 'O'],
+]
+
+assert test_two_cycles.get_board() == test_set_after_second_cycle
+
+
+test_three_cycles = Cycle(test_input)
+test_three_cycles.cycle()
+test_three_cycles.cycle()
+test_three_cycles.cycle()
+
+test_set_after_third_cycle = [
+    ['.', '.', '.', '.', '.', '#', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '#', '.', '.', '.', 'O', '#'],
+    ['.', '.', '.', '.', '.', '#', '#', '.', '.', '.'],
+    ['.', '.', 'O', '#', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', 'O', 'O', 'O', '#', '.'],
+    ['.', 'O', '#', '.', '.', '.', 'O', '#', '.', '#'],
+    ['.', '.', '.', '.', 'O', '#', '.', '.', '.', 'O'],
+    ['.', '.', '.', '.', '.', '.', '.', 'O', 'O', 'O'],
+    ['#', '.', '.', '.', 'O', '#', '#', '#', '.', 'O'],
+    ['#', '.', 'O', 'O', 'O', '#', '.', '.', '.', 'O'],
+]
+
+assert test_three_cycles.get_board() == test_set_after_third_cycle
