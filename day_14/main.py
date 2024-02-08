@@ -186,16 +186,23 @@ class Cycle:
         self.pivot()
         self.next_direction()
 
+    def cycle(self):
+        for _ in range(4):
+            self.slide()
+
+    def get_board(self):
+        """
+            why pivot ? - how to asure that side is right ? -
+            at start we're doing one pivot and to back we need to return to start position
+        """
+        self.pivot()
+        return self.board
+
 
 # testing cycle mechanism
 test_one_cycle = Cycle(test_input)
-test_one_cycle.slide()
-test_one_cycle.slide()
-test_one_cycle.slide()
-test_one_cycle.slide()
+test_one_cycle.cycle()
 
-# why pivot ? - how to asure that side is right ?
-test_one_cycle.pivot()
 
 # test data to compare
 test_set_after_one_cycle = [
@@ -211,4 +218,4 @@ test_set_after_one_cycle = [
     ['#', '.', '.', 'O', 'O', '#', '.', '.', '.', '.'],
 ]
 
-assert test_one_cycle.board == test_set_after_one_cycle
+assert test_one_cycle.get_board() == test_set_after_one_cycle
