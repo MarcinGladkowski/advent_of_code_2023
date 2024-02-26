@@ -15,3 +15,4 @@ assert 52 == get_result('HASH')
 assert 30 == get_result('rn=1')
 
 assert 1320 == calculate_from_instruction(test_input)
+
