@@ -1,3 +1,5 @@
+import unittest
+
 from main import calculate_hash, get_result, calculate_from_instruction, process_single_instruction
 from shared.main import load_data
 
@@ -23,4 +25,22 @@ assert 507291 == calculate_from_instruction(load_data('input_data.txt')[0])
 """part 2"""
 assert 3 == get_result('pc')  # box number
 
-assert ['rn 1'] == process_single_instruction('rn=1', {})[0]
+
+class TestSum(unittest.TestCase):
+    def test_add_single_element(self):
+        assert ['rn 1'] == process_single_instruction('rn=1', {})[0]
+
+    def test_add_two_elements_to_both_boxes(self):
+        box = {}
+        box = process_single_instruction('rn=1',  box)
+        box = process_single_instruction('qp=3', box)
+
+        assert ['rn 1'] == box[0]
+        assert ['qp 3'] == box[1]
+
+    def test_add_second_element_to_same_box(self):
+        box = {}
+        box = process_single_instruction('rn=1', box)
+        box = process_single_instruction('cm=2', box)
+
+        assert ['rn 1', 'cm 2'] == box[0]

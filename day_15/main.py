@@ -25,7 +25,7 @@ def calculate_from_instruction(instructions: str) -> int:
 
 
 def process_single_instruction(instruction: str, boxes: dict) -> dict:
-    statement = instruction[2:3]
+    statement = instruction[2:3] # =/-
     box_number = get_result(instruction[:2])
     value = instruction.replace(statement, ' ')
     """
@@ -34,5 +34,9 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
     if boxes.get(box_number) is None:
         boxes[box_number] = [value]
         return boxes
+
+    boxes[box_number].append(value)
+
+    return boxes
 
 
