@@ -21,11 +21,6 @@ assert 1320 == calculate_from_instruction(test_input)
 assert 507291 == calculate_from_instruction(load_data('input_data.txt')[0])
 
 """part 2"""
-assert 3 == get_result('pc') # box number
+assert 3 == get_result('pc')  # box number
 
-assert 'rn' == 'rn=1'[:2]
-
-result = process_single_instruction('rn=1', {})
-
-print(result)
-
+assert ['rn 1'] == process_single_instruction('rn=1', {})[0]
