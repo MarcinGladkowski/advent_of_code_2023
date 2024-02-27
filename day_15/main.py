@@ -22,3 +22,20 @@ def get_result(chars: str):
 def calculate_from_instruction(instructions: str) -> int:
     elements = instructions.split(',')
     return sum([get_result(x) for x in elements])
+
+
+def process_single_instruction(instruction: str, boxes: dict) -> dict:
+    statement = None
+    if '=' in instruction:
+        statement = '='
+
+    if '-' in instruction:
+        statement = '-'
+
+    box_number = get_result(instruction[:2]) + 1
+
+    value = instruction.replace(statement, '')
+
+    boxes[box_number] = [value]
+
+    return boxes

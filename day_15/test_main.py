@@ -1,4 +1,4 @@
-from main import calculate_hash, get_result, calculate_from_instruction
+from main import calculate_hash, get_result, calculate_from_instruction, process_single_instruction
 from shared.main import load_data
 
 test_input = 'rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'
@@ -22,3 +22,10 @@ assert 507291 == calculate_from_instruction(load_data('input_data.txt')[0])
 
 """part 2"""
 assert 3 == get_result('pc') # box number
+
+assert 'rn' == 'rn=1'[:2]
+
+result = process_single_instruction('rn=1', {})
+
+print(result)
+
