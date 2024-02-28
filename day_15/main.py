@@ -24,6 +24,16 @@ def calculate_from_instruction(instructions: str) -> int:
     return sum([get_result(x) for x in elements])
 
 
+def process_instruction_to_boxes(instructions: str) -> dict:
+    instructions = instructions.split(',')
+    boxes = {}
+    for instruction in instructions:
+        boxes = process_single_instruction(instruction, boxes)
+
+    return boxes
+
+
+
 def process_single_instruction(instruction: str, boxes: dict) -> dict:
     statement = instruction[2:3]  # =/-
     box_number = get_result(instruction[:2])

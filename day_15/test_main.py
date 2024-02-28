@@ -1,7 +1,7 @@
 import unittest
 
 from main import equal_strategy, dash_strategy, calculate_hash, get_result, calculate_from_instruction, \
-    process_single_instruction
+    process_single_instruction, process_instruction_to_boxes
 from shared.main import load_data
 
 test_input = 'rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'
@@ -66,3 +66,11 @@ class PartTwo(unittest.TestCase):
         }
 
         assert ['ot 9', 'ab 5', 'pc 6'] == equal_strategy('ot 9', box, 3)[3]
+
+    def test_equal_test_input_instructions(self):
+        test_input = 'rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'
+
+        boxes = process_instruction_to_boxes(test_input)
+
+        assert ['rn 1', 'cm 2'] == boxes[0]
+        assert ['ot 7', 'ab 5', 'pc 6'] == boxes[3]
