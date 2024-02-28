@@ -1,7 +1,7 @@
 import unittest
 
 from main import equal_strategy, dash_strategy, calculate_hash, get_result, calculate_from_instruction, \
-    process_single_instruction, process_instruction_to_boxes
+    process_single_instruction, process_instruction_to_boxes, calculate_box_row
 from shared.main import load_data
 
 test_input = 'rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'
@@ -74,3 +74,6 @@ class PartTwo(unittest.TestCase):
 
         assert ['rn 1', 'cm 2'] == boxes[0]
         assert ['ot 7', 'ab 5', 'pc 6'] == boxes[3]
+
+    def test_calculate_single_box_row(self):
+        assert 140 == calculate_box_row(['ot 7', 'ab 5', 'pc 6'], 3)
