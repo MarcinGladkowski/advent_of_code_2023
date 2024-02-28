@@ -46,6 +46,13 @@ class PartTwo(unittest.TestCase):
 
         assert ['rn 1', 'cm 2'] == box[0]
 
+    def test_equal_add_element_to_box_zero(self):
+        box = {
+            0: ['rn 1'],
+        }
+
+        assert ['rn 1', 'cm 2'] == equal_strategy('cm 2', box, 0)[0]
+
     def test_dash_removing_single_element(self):
         box = {
             0: ['rn 1', 'cm 2'],
@@ -53,9 +60,9 @@ class PartTwo(unittest.TestCase):
 
         assert ['rn 1'] == dash_strategy('cm-', box, 0)[0]
 
-    def test_equal_add_element_to_box_zero(self):
+    def test_equal_strategy_replacing_existing_label(self):
         box = {
-            0: ['rn 1'],
+            3: ['ot 7', 'ab 5', 'pc 6'],
         }
 
-        assert ['rn 1', 'cm 2'] == equal_strategy('cm 2', box, 0)[0]
+        assert ['ot 9', 'ab 5', 'pc 6'] == equal_strategy('ot 9', box, 3)[3]

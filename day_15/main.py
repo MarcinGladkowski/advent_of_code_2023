@@ -46,7 +46,24 @@ def equal_strategy(label: str, boxes: dict, box_number: int) -> dict:
     """
         strategy for: =
     """
-    boxes[box_number].append(label)
+    label_name = label[:2]
+
+    in_list = list(filter(
+        lambda x: x.startswith(label_name) is True,
+        boxes[box_number])
+    )
+
+    if len(in_list) == 0:
+        boxes[box_number].append(label)
+        return boxes
+
+    elements = boxes[box_number]
+    for i, element in enumerate(elements):
+        if element.startswith(label_name):
+            elements[i] = label
+            break
+
+    boxes[box_number] = elements
 
     return boxes
 
