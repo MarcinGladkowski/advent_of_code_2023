@@ -28,15 +28,27 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
     statement = instruction[2:3] # =/-
     box_number = get_result(instruction[:2])
     value = instruction.replace(statement, ' ')
-    """
-       '=' - adding new to box
-    """
+
+    """Create key if not exists"""
     if boxes.get(box_number) is None:
-        boxes[box_number] = [value]
-        return boxes
+        boxes[box_number] = []
 
     boxes[box_number].append(value)
 
     return boxes
 
 
+def dash_strategy(label: str, boxes: dict, box_number: int) -> dict:
+    """
+       param: label e.g. 'rm 2'
+       sign: -
+    """
+    label_name = label[:2]
+    filter_not_matching = list(filter(
+        lambda x: x.startswith(label_name) is False,
+        boxes[box_number])
+    )
+
+    boxes[box_number] = filter_not_matching
+
+    return boxes

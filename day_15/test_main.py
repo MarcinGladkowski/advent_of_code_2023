@@ -1,6 +1,6 @@
 import unittest
 
-from main import calculate_hash, get_result, calculate_from_instruction, process_single_instruction
+from main import dash_strategy, calculate_hash, get_result, calculate_from_instruction, process_single_instruction
 from shared.main import load_data
 
 test_input = 'rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'
@@ -44,3 +44,11 @@ class TestSum(unittest.TestCase):
         box = process_single_instruction('cm=2', box)
 
         assert ['rn 1', 'cm 2'] == box[0]
+
+    def test_dash_removing_single_element(self):
+
+        box = {
+            0: ['rn 1', 'cm 2'],
+        }
+
+        assert ['rn 1'] == dash_strategy('cm-', box, 0)[0]
