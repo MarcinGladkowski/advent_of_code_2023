@@ -25,7 +25,7 @@ def calculate_from_instruction(instructions: str) -> int:
 
 
 def process_single_instruction(instruction: str, boxes: dict) -> dict:
-    statement = instruction[2:3] # =/-
+    statement = instruction[2:3]  # =/-
     box_number = get_result(instruction[:2])
     value = instruction.replace(statement, ' ')
 
@@ -33,7 +33,20 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
     if boxes.get(box_number) is None:
         boxes[box_number] = []
 
-    boxes[box_number].append(value)
+    match statement:
+        case '=':
+            return equal_strategy(value, boxes, box_number)
+        case '-':
+            return dash_strategy(value, boxes, box_number)
+
+    return boxes
+
+
+def equal_strategy(label: str, boxes: dict, box_number: int) -> dict:
+    """
+        strategy for: =
+    """
+    boxes[box_number].append(label)
 
     return boxes
 
@@ -41,7 +54,7 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
 def dash_strategy(label: str, boxes: dict, box_number: int) -> dict:
     """
        param: label e.g. 'rm 2'
-       sign: -
+       strategy for: -
     """
     label_name = label[:2]
     filter_not_matching = list(filter(
