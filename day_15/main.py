@@ -1,3 +1,4 @@
+import re
 from typing import Generator
 
 
@@ -20,12 +21,13 @@ def get_result(chars: str):
 
 
 def calculate_from_instruction(instructions: str) -> int:
+    """Part 1 solution"""
     elements = instructions.split(',')
     return sum([get_result(x) for x in elements])
 
 
 def calculate_box_row(box_row: list, index: 0) -> int:
-    return sum([int(i+1) * int(x[-1]) * (index+1) for i, x in enumerate(box_row)])
+    return sum([int(i + 1) * int(x[-1]) * (index + 1) for i, x in enumerate(box_row)])
 
 
 def process_instruction_to_boxes(instructions: str) -> dict:
@@ -37,9 +39,29 @@ def process_instruction_to_boxes(instructions: str) -> dict:
     return boxes
 
 
+def calculate_boxes(boxes: dict) -> int:
+    sum = 0
+    for i, box in boxes.items():
+        sum += calculate_box_row(box, i)
+
+    return sum
+
+
+def get_label(instruction: str) -> str:
+    return re.sub(r'[-|=\d+]', '', instruction)
+
+
 def process_single_instruction(instruction: str, boxes: dict) -> dict:
-    statement = instruction[2:3]  # =/-
-    box_number = get_result(instruction[:2])
+    statement = None
+
+    if re.search('=', instruction) is not None:
+        statement = '='
+    if re.search('-', instruction) is not None:
+        statement = '-'
+
+    label = get_label(instruction)
+
+    box_number = get_result(label)
     value = instruction.replace(statement, ' ')
 
     """Create key if not exists"""
@@ -48,9 +70,9 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
 
     match statement:
         case '=':
-            return equal_strategy(value, boxes, box_number)
+            boxes = equal_strategy(value, boxes, box_number)
         case '-':
-            return dash_strategy(value, boxes, box_number)
+            boxes = dash_strategy(value, boxes, box_number)
 
     return boxes
 
