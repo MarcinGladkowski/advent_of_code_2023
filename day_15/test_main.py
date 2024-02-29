@@ -108,6 +108,8 @@ class PartTwo(unittest.TestCase):
     def test_calculate_part_two(self):
         # 59717 too low, 293485 - to low, 603482 - to high
         boxes = process_instruction_to_boxes(load_data('input_data.txt')[0])
-        print(calculate_boxes(boxes))
+        #pprint(boxes)
+        result = calculate_boxes(boxes)
+        print(result)
 
         assert True

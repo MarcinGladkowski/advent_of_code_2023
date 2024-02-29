@@ -1,4 +1,5 @@
 import re
+from pprint import pprint
 from typing import Generator
 
 
@@ -27,7 +28,14 @@ def calculate_from_instruction(instructions: str) -> int:
 
 
 def calculate_box_row(box_row: list, index: 0) -> int:
-    return sum([int(i + 1) * int(x[-1]) * (index + 1) for i, x in enumerate(box_row)])
+
+    box_sum = 0
+    for i, x in enumerate(box_row):
+        box_sum += int(i + 1) * int(x[-1]) * (index + 1)
+
+    print(f"box_index: {index} - box - {box_row} - sum: {box_sum}")
+
+    return box_sum
 
 
 def process_instruction_to_boxes(instructions: str) -> dict:
