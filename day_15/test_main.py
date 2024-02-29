@@ -30,6 +30,10 @@ assert 3 == get_result('pc')  # box number
 
 
 class PartTwo(unittest.TestCase):
+
+    def test_calculate_hash(self):
+        assert 255 == get_result('sl')
+
     def test_add_single_element(self):
         assert ['rn 1'] == process_single_instruction('rn=1', {})[0]
 
@@ -81,6 +85,14 @@ class PartTwo(unittest.TestCase):
 
         assert ['ot 7', 'ab 5', 'pc 6'] == equal_strategy('ot 7', box, 3)[3]
 
+    def test_equal_strategy_replacing_existing_label_in_the_middle(self):
+        box = {
+            3: ['ot 9', 'ab 5', 'pc 6'],
+        }
+
+        assert ['ot 9', 'ab 1', 'pc 6'] == equal_strategy('ab 1', box, 3)[3]
+
+
     def test_equal_test_input_instructions(self):
 
         boxes = process_instruction_to_boxes('rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7')
@@ -106,10 +118,8 @@ class PartTwo(unittest.TestCase):
         assert 145 == calculate_boxes(process_instruction_to_boxes('rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'))
 
     def test_calculate_part_two(self):
-        # 59717 too low, 293485 - to low, 603482 - to high
+        """59717 too low, 293485 - to low, 603482 - to high"""
         boxes = process_instruction_to_boxes(load_data('input_data.txt')[0])
-        #pprint(boxes)
-        result = calculate_boxes(boxes)
-        print(result)
+        pprint(boxes)
 
         assert True

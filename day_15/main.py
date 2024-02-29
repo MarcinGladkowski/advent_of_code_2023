@@ -2,6 +2,8 @@ import re
 from pprint import pprint
 from typing import Generator
 
+DEBUG = False
+
 
 def calculate_hash(chars: str, value: int = 0, index: int = 0) -> Generator:
     while index < len(chars):
@@ -75,6 +77,10 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
     """Create key if not exists"""
     if boxes.get(box_number) is None:
         boxes[box_number] = []
+
+    if DEBUG:
+        boxes[box_number].append(instruction)
+        return boxes
 
     match statement:
         case '=':
