@@ -66,8 +66,16 @@ class PartTwo(unittest.TestCase):
         box = {
             0: ['rn 1', 'cm 2'],
         }
+        assert ['rn 1'] == dash_strategy('cm 3', box, 0)[0]
 
-        assert ['rn 1'] == dash_strategy('cm-', box, 0)[0]
+
+    def test_equal_strategy_not_based_on_starting_label(self):
+
+        box = {
+            3: ['sft 9'],
+        }
+
+        assert ['sft 9', 'sftm 3'] == equal_strategy('sftm 3', box, 3)[3]
 
 
     def test_dash_strategy_to_remove_first_element(self):
@@ -76,7 +84,7 @@ class PartTwo(unittest.TestCase):
             3: ['pc 4', 'ot 9', 'ab 5']
         }
 
-        assert ['ot 9', 'ab 5'] == dash_strategy('pc-', box, 3)[3]
+        assert ['ot 9', 'ab 5'] == dash_strategy('pc ', box, 3)[3]
 
     def test_equal_strategy_replacing_existing_label(self):
         box = {
@@ -100,6 +108,15 @@ class PartTwo(unittest.TestCase):
         assert ['rn 1', 'cm 2'] == boxes[0]
         assert ['ot 7', 'ab 5', 'pc 6'] == boxes[3]
 
+
+    def test_process_input_to_single_box(self):
+
+        as_raw_input = ','.join(['sfp=9', 'mbz-', 'sf-', 'sf-', 'mbz=5', 'sf=3', 'mbz=9'])
+
+        boxes = process_instruction_to_boxes(as_raw_input)
+
+        assert ['sfp 9', 'mbz 9', 'sf 3'] == boxes[153]
+
     def test_calculate_single_box_row(self):
         assert 4104 == calculate_box_row([ 'bc 7', 'clrt 7', 'pjfrs 4', 'vxpg 7', 'qhl 3'], 53)
         assert 140 == calculate_box_row(['ot 7', 'ab 5', 'pc 6'], 3)
@@ -112,6 +129,8 @@ class PartTwo(unittest.TestCase):
     def test_generate_boxes_for_test_data(self):
         boxes = process_instruction_to_boxes('rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7')
 
+        print(boxes)
+
         assert ['rn 1', 'cm 2'] == boxes[0]
         assert ['ot 7', 'ab 5', 'pc 6'] == boxes[3]
 
@@ -119,10 +138,5 @@ class PartTwo(unittest.TestCase):
         assert 145 == calculate_boxes(process_instruction_to_boxes('rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7'))
 
     def test_calculate_part_two(self):
-        """59717 too low, 293485 - to low, 603482 - to high"""
         boxes = process_instruction_to_boxes(load_data('input_data.txt')[0])
-        pprint(boxes, width=1000)
-
-        calculate_boxes(boxes)
-
-        assert True
+        assert 296921 == calculate_boxes(boxes)

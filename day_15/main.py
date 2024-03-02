@@ -30,7 +30,6 @@ def calculate_from_instruction(instructions: str) -> int:
 
 
 def calculate_box_row(box_row: list, index: 0) -> int:
-
     box_sum = 0
     for i, x in enumerate(box_row):
         box_sum += int(i + 1) * int(x[-1]) * (index + 1)
@@ -92,14 +91,22 @@ def process_single_instruction(instruction: str, boxes: dict) -> dict:
     return boxes
 
 
+def get_label_indicator(label: str):
+    """
+    From format e.g smt 9 => smt
+    :return:
+    """
+    return re.sub(r'\s[0-9]', '', label)
+
+
 def equal_strategy(label: str, boxes: dict, box_number: int) -> dict:
     """
         strategy for: =
     """
-    label_name = label[:2]
+    label_name = get_label_indicator(label)
 
     in_list = list(filter(
-        lambda x: x.startswith(label_name) is True,
+        lambda x: get_label_indicator(x) == label_name,
         boxes[box_number])
     )
 
@@ -109,7 +116,7 @@ def equal_strategy(label: str, boxes: dict, box_number: int) -> dict:
 
     elements = boxes[box_number]
     for i, element in enumerate(elements):
-        if element.startswith(label_name):
+        if get_label_indicator(element) == label_name:
             elements[i] = label
             break
 
@@ -123,9 +130,8 @@ def dash_strategy(label: str, boxes: dict, box_number: int) -> dict:
        param: label e.g. 'rm 2'
        strategy for: -
     """
-    label_name = label[:2]
     filter_not_matching = list(filter(
-        lambda x: x.startswith(label_name) is False,
+        lambda x: get_label_indicator(x) != get_label_indicator(label).strip(),
         boxes[box_number])
     )
 
