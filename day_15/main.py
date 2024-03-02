@@ -35,7 +35,8 @@ def calculate_box_row(box_row: list, index: 0) -> int:
     for i, x in enumerate(box_row):
         box_sum += int(i + 1) * int(x[-1]) * (index + 1)
 
-    print(f"box_index: {index} - box - {box_row} - sum: {box_sum}")
+    if DEBUG:
+        print(f"box_index: {index} - box - {box_row} - sum: {box_sum}")
 
     return box_sum
 

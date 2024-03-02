@@ -101,6 +101,7 @@ class PartTwo(unittest.TestCase):
         assert ['ot 7', 'ab 5', 'pc 6'] == boxes[3]
 
     def test_calculate_single_box_row(self):
+        assert 4104 == calculate_box_row([ 'bc 7', 'clrt 7', 'pjfrs 4', 'vxpg 7', 'qhl 3'], 53)
         assert 140 == calculate_box_row(['ot 7', 'ab 5', 'pc 6'], 3)
 
     def test_label_processing(self):
@@ -120,6 +121,8 @@ class PartTwo(unittest.TestCase):
     def test_calculate_part_two(self):
         """59717 too low, 293485 - to low, 603482 - to high"""
         boxes = process_instruction_to_boxes(load_data('input_data.txt')[0])
-        pprint(boxes)
+        pprint(boxes, width=1000)
+
+        calculate_boxes(boxes)
 
         assert True
