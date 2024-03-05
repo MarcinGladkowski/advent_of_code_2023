@@ -1,7 +1,8 @@
 import unittest
 
 from shared.main import load_data
-from main import Point, normalize_data
+from main import Point, normalize_data, Dot
+import inspect
 
 TEST_DATA_FILE_NAME = 'test_input.txt'
 
@@ -19,4 +20,14 @@ class TestLoadData(unittest.TestCase):
 
         for row in normalized:
             for element in row:
-                assert isinstance(element, Point)
+                assert element.x is not None
+                assert element.y is not None
+                assert element.sign is not None
+
+    def test_continue_path_from_dot_to_dot(self):
+
+        row = [Dot(0, 0, '.'), Dot(1, 0, '.')]
+
+
+
+
