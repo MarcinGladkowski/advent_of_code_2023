@@ -65,8 +65,7 @@ class MapWalker:
         self._points_map = points_map
         self._cursor = initial
         self._move = initial_move
-
-        self._points_map[initial.y][initial.x].visit()
+        # store visited elements
 
     def next(self) -> None:
         """
@@ -75,9 +74,16 @@ class MapWalker:
         """
         direction = self._cursor.execute(self._move)  # get new element by returned direction
 
-        # logic of executing
-        if direction == Direction.RIGHT:
-            # get next element from map
-            next_point = self._points_map[self._cursor.y][self._cursor.x + 1]
-            # check if exists
-            self._cursor = next_point
+        # getting element by direction
+        match direction:
+            case Direction.RIGHT:
+                # get next element from map
+                self._cursor = self._points_map[self._cursor.y][self._cursor.x + 1]
+                # check if exists
+            case Direction.LEFT:
+                self._cursor = self._points_map[self._cursor.y][self._cursor.x - 1]
+            case Direction.UP:
+                self._cursor = self._points_map[self._cursor.y + 1][self._cursor.x]
+            case Direction.DOWN:
+                self._cursor = self._points_map[self._cursor.y - 1][self._cursor.x]
+

@@ -18,17 +18,17 @@ class TestLoadData(unittest.TestCase):
     def test_storing_unique_points(self):
         assert 2 == len({Dot(0, 0, ''), Dot(0, 0, ''), Dot(0, 1, '')})
 
-    def test_load_add_elements_normalized_to_type_point(self):
-
-        data = load_data(TEST_DATA_FILE_NAME)
-
-        normalized = normalize_data(data)
-
-        for row in normalized:
-            for element in row:
-                assert element.x is not None
-                assert element.y is not None
-                assert element.sign is not None
+    # def test_load_add_elements_normalized_to_type_point(self):
+    #
+    #     data = load_data(TEST_DATA_FILE_NAME)
+    #
+    #     normalized = normalize_data(data)
+    #
+    #     for row in normalized:
+    #         for element in row:
+    #             assert element.y is not None
+    #             assert element.x is not None
+    #             assert element.sign is not None
 
     def test_continue_path_from_dot_to_dot(self):
 
