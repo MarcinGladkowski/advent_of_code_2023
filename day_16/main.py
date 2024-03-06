@@ -13,7 +13,7 @@ def normalize_data(data: list):
 
             match element:
                 case '.':
-                    point = Dot(x, y, element)
+                    point = Dot(y, x, element)
 
             row.append(point)
 
@@ -32,14 +32,20 @@ class Direction(Enum):
 
 @dataclass
 class Point(ABC):
-    """Abstract class for traversing"""
-    x: int
+    """
+        Abstract class for traversing
+        - keep order of arguments
+    """
     y: int
+    x: int
     sign: str
 
     @abstractmethod
     def execute(self, direction: Direction) -> [Direction]:
         pass
+
+    def __hash__(self):
+        return hash(str(self.y) + '-' + str(self.x))
 
 
 class Dot(Point):
@@ -47,14 +53,31 @@ class Dot(Point):
         """
         Pass the same direction -> continue moving
         """
-        return [
-            Direction
-        ]
+        return direction
 
 
 class MapWalker:
-    def __init__(self, map: list, initial: Point):
-        self._map = map
+    """
+        List visited points in separate list/set (only unique values)
+        - requires implement __hash__ method to point classes
+    """
+    def __init__(self, points_map: list, initial: Point, initial_move: Direction = Direction.RIGHT):
+        self._points_map = points_map
+        self._cursor = initial
+        self._move = initial_move
 
-    def next(self):
-        pass
+        self._points_map[initial.y][initial.x].visit()
+
+    def next(self) -> None:
+        """
+            Store visited Points
+            - only unique Set
+        """
+        direction = self._cursor.execute(self._move)  # get new element by returned direction
+
+        # logic of executing
+        if direction == Direction.RIGHT:
+            # get next element from map
+            next_point = self._points_map[self._cursor.y][self._cursor.x + 1]
+            # check if exists
+            self._cursor = next_point
