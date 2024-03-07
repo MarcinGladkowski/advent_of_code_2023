@@ -75,15 +75,21 @@ class MapWalker:
         direction = self._cursor.execute(self._move)  # get new element by returned direction
 
         # getting element by direction
+        self._cursor = self.get_next_point(direction)
+
+    def get_next_point(self, direction: Direction) -> Point:
+        """
+           Move on map by direction
+
+           If key Error that's mean its jump over the edge
+        """
         match direction:
             case Direction.RIGHT:
-                # get next element from map
-                self._cursor = self._points_map[self._cursor.y][self._cursor.x + 1]
-                # check if exists
+                return self._points_map[self._cursor.y][self._cursor.x + 1]
             case Direction.LEFT:
-                self._cursor = self._points_map[self._cursor.y][self._cursor.x - 1]
+                return self._points_map[self._cursor.y][self._cursor.x - 1]
             case Direction.UP:
-                self._cursor = self._points_map[self._cursor.y + 1][self._cursor.x]
+                return self._points_map[self._cursor.y + 1][self._cursor.x]
             case Direction.DOWN:
-                self._cursor = self._points_map[self._cursor.y - 1][self._cursor.x]
+                return self._points_map[self._cursor.y - 1][self._cursor.x]
 
