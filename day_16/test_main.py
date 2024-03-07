@@ -33,14 +33,21 @@ class TestLoadData(unittest.TestCase):
     def test_continue_path_from_dot_to_dot(self):
 
         input_one_row_map = normalize_data([['.', '.', '.']])
-
         walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
-
         walker.next()
 
         assert walker._cursor.x == 1
         assert walker._cursor.y == 0
 
+    def test_store_three_points_moving_right(self):
+
+        input_one_row_map = normalize_data([['.', '.', '.']])
+        walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
+
+        walker.next()
+        walker.next()
+
+        assert 3 == len(walker._visited)
 
 
 

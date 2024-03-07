@@ -66,16 +66,17 @@ class MapWalker:
         self._cursor = initial
         self._move = initial_move
         # store visited elements
+        self._visited = set()
+        self._visited.add(self._cursor)
 
     def next(self) -> None:
         """
             Store visited Points
             - only unique Set
         """
-        direction = self._cursor.execute(self._move)  # get new element by returned direction
-
-        # getting element by direction
-        self._cursor = self.get_next_point(direction)
+        self._move = self._cursor.execute(self._move)  # get new element by returned direction
+        self._cursor = self.get_next_point(self._move)
+        self._visited.add(self._cursor)
 
     def get_next_point(self, direction: Direction) -> Point:
         """
