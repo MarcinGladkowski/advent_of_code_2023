@@ -49,7 +49,14 @@ class TestLoadData(unittest.TestCase):
 
         assert 3 == len(walker._visited)
 
+        input_one_row_map = normalize_data([
+            ['.', '.', '.'],
+            ['.', '|', '.'], # start of left side
+            ['.', '.', '.'],
+        ])
 
+        walker = MapWalker(input_one_row_map, Dot(1, 0, '.'))
 
+        walker.next()
 
 

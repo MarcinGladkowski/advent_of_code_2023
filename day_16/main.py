@@ -47,6 +47,9 @@ class Point(ABC):
     def __hash__(self):
         return hash(str(self.y) + '-' + str(self.x))
 
+    def __str__(self):
+        return f"Point {self.sign} - x:{self.x} - y:{self.y}"
+
 
 class Dot(Point):
     def execute(self, direction: Direction):
@@ -56,16 +59,29 @@ class Dot(Point):
         return direction
 
 
+class VerticalSplitter(Point):
+    """
+       Sign: |
+       Return two new directions: UP and DOWN
+    """
+
+    def execute(self, direction: Direction) -> [Direction]:
+        return [
+            Direction.UP,
+            Direction.DOWN
+        ]
+
+
 class MapWalker:
     """
         List visited points in separate list/set (only unique values)
         - requires implement __hash__ method to point classes
     """
+
     def __init__(self, points_map: list, initial: Point, initial_move: Direction = Direction.RIGHT):
         self._points_map = points_map
         self._cursor = initial
         self._move = initial_move
-        # store visited elements
         self._visited = set()
         self._visited.add(self._cursor)
 
@@ -74,23 +90,40 @@ class MapWalker:
             Store visited Points
             - only unique Set
         """
-        self._move = self._cursor.execute(self._move)  # get new element by returned direction
-        self._cursor = self.get_next_point(self._move)
-        self._visited.add(self._cursor)
+        next_move = self._cursor.execute(self._move)
 
-    def get_next_point(self, direction: Direction) -> Point:
+        if isinstance(next_move, Direction):
+            self._move = next_move
+            self._cursor = self.get_next_point(self._move)
+            self._visited.add(self._cursor)
+            return self.next() # recursion
+
+        if isinstance(next_move, list):
+            """
+            if returned more than one direction we need to start new two walkers
+            """
+            pass
+
+    def get_next_point(self, direction: Direction) -> Point | None:
         """
            Move on map by direction
 
            If key Error that's mean its jump over the edge
+
+           While wall stop executing
         """
-        match direction:
-            case Direction.RIGHT:
-                return self._points_map[self._cursor.y][self._cursor.x + 1]
-            case Direction.LEFT:
-                return self._points_map[self._cursor.y][self._cursor.x - 1]
-            case Direction.UP:
-                return self._points_map[self._cursor.y + 1][self._cursor.x]
-            case Direction.DOWN:
-                return self._points_map[self._cursor.y - 1][self._cursor.x]
+        try:
+            match direction:
+                case Direction.RIGHT:
+                    return self._points_map[self._cursor.y][self._cursor.x + 1]
+                case Direction.LEFT:
+                    return self._points_map[self._cursor.y][self._cursor.x - 1]
+                case Direction.UP:
+                    return self._points_map[self._cursor.y + 1][self._cursor.x]
+                case Direction.DOWN:
+                    return self._points_map[self._cursor.y - 1][self._cursor.x]
+        except KeyError:
+            print(f"Out of map for coords move {direction} and coords {self._cursor}")
+            return None
+
 
