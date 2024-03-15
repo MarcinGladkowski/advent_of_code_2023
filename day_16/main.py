@@ -52,11 +52,13 @@ class Point(ABC):
 
 
 class Dot(Point):
-    def execute(self, direction: Direction):
+    def execute(self, direction: Direction) -> [Direction]:
         """
         Pass the same direction -> continue moving
         """
-        return direction
+        return [
+            direction
+        ]
 
 
 class VerticalSplitter(Point):
@@ -92,17 +94,22 @@ class MapWalker:
         """
         next_move = self._cursor.execute(self._move)
 
-        if isinstance(next_move, Direction):
-            self._move = next_move
-            self._cursor = self.get_next_point(self._move)
+        if len(next_move) == 1:
+            self._move = next_move[0]
+            next_point = self.get_next_point(self._move)
+
+            if next_point is None:
+                return None
+
+            self._cursor = next_point
+
             self._visited.add(self._cursor)
             return self.next() # recursion
 
-        if isinstance(next_move, list):
-            """
-            if returned more than one direction we need to start new two walkers
-            """
-            pass
+        """
+        if returned more than one direction we need to start new two walkers
+        """
+        return None
 
     def get_next_point(self, direction: Direction) -> Point | None:
         """
@@ -122,7 +129,7 @@ class MapWalker:
                     return self._points_map[self._cursor.y + 1][self._cursor.x]
                 case Direction.DOWN:
                     return self._points_map[self._cursor.y - 1][self._cursor.x]
-        except KeyError:
+        except IndexError:
             print(f"Out of map for coords move {direction} and coords {self._cursor}")
             return None
 

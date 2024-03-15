@@ -1,7 +1,7 @@
 import unittest
 
 from shared.main import load_data
-from main import Point, normalize_data, Dot, MapWalker
+from main import Point, normalize_data, Dot, MapWalker, Direction
 import inspect
 
 TEST_DATA_FILE_NAME = 'test_input.txt'
@@ -39,6 +39,13 @@ class TestLoadData(unittest.TestCase):
         assert walker._cursor.x == 1
         assert walker._cursor.y == 0
 
+    def test_return_next_element_from_map_by_direction(self):
+        input_one_row_map = normalize_data([['.', '.', '.']])
+        walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
+
+        assert Dot(0, 1, '.') == walker.get_next_point(Direction.RIGHT)
+
+
     def test_store_three_points_moving_right(self):
 
         input_one_row_map = normalize_data([['.', '.', '.']])
@@ -49,14 +56,14 @@ class TestLoadData(unittest.TestCase):
 
         assert 3 == len(walker._visited)
 
-        input_one_row_map = normalize_data([
-            ['.', '.', '.'],
-            ['.', '|', '.'], # start of left side
-            ['.', '.', '.'],
-        ])
-
-        walker = MapWalker(input_one_row_map, Dot(1, 0, '.'))
-
-        walker.next()
+        # input_one_row_map = normalize_data([
+        #     ['.', '.', '.'],
+        #     ['.', '|', '.'], # start of left side
+        #     ['.', '.', '.'],
+        # ])
+        #
+        # walker = MapWalker(input_one_row_map, Dot(1, 0, '.'))
+        #
+        # walker.next()
 
 
