@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from abc import abstractmethod, ABC
 from enum import Enum
+from typing import Self
 
 
 def normalize_data(data: list):
@@ -14,6 +15,8 @@ def normalize_data(data: list):
             match element:
                 case '.':
                     point = Dot(y, x, element)
+                case '|':
+                    point = VerticalSplitter(y, x, element)
 
             row.append(point)
 
@@ -87,7 +90,7 @@ class MapWalker:
         self._visited = set()
         self._visited.add(self._cursor)
 
-    def next(self) -> None:
+    def next(self) -> Self | list:
         """
             Store visited Points
             - only unique Set
@@ -99,17 +102,18 @@ class MapWalker:
             next_point = self.get_next_point(self._move)
 
             if next_point is None:
-                return None
+                return MapWalker
 
             self._cursor = next_point
 
             self._visited.add(self._cursor)
             return self.next() # recursion
 
-        """
-        if returned more than one direction we need to start new two walkers
-        """
-        return None
+        """ if returned more than one direction we need to start new two walkers"""
+        return [
+            MapWalker(self._points_map, self.get_next_point(next_move))
+            for point in next_move if self.get_next_point(point) is not None
+        ]
 
     def get_next_point(self, direction: Direction) -> Point | None:
         """

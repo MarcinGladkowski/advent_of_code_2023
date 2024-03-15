@@ -31,7 +31,6 @@ class TestLoadData(unittest.TestCase):
     #             assert element.sign is not None
 
     def test_continue_path_from_dot_to_dot(self):
-
         input_one_row_map = normalize_data([['.', '.', '.']])
         walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
         walker.next()
@@ -45,9 +44,7 @@ class TestLoadData(unittest.TestCase):
 
         assert Dot(0, 1, '.') == walker.get_next_point(Direction.RIGHT)
 
-
     def test_store_three_points_moving_right(self):
-
         input_one_row_map = normalize_data([['.', '.', '.']])
         walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
 
@@ -56,14 +53,16 @@ class TestLoadData(unittest.TestCase):
 
         assert 3 == len(walker._visited)
 
-        # input_one_row_map = normalize_data([
-        #     ['.', '.', '.'],
-        #     ['.', '|', '.'], # start of left side
-        #     ['.', '.', '.'],
-        # ])
-        #
-        # walker = MapWalker(input_one_row_map, Dot(1, 0, '.'))
-        #
-        # walker.next()
+    def test_split_walker_on_flat_side_of_splitter(self):
+        input_one_row_map = normalize_data([
+            ['.', '.', '.'],
+            ['.', '|', '.'],  # start of left side
+            ['.', '.', '.'],
+        ])
+
+        walker = MapWalker(input_one_row_map, Dot(1, 0, '.'))
+        walker = walker.next()
+
+        assert 2 == len(walker)
 
 
