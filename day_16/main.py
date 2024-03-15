@@ -107,7 +107,12 @@ class MapWalker:
             self._cursor = next_point
 
             self._visited.add(self._cursor)
-            return self.next() # recursion
+            return self.next()  # recursion
+
+        mapped = [
+            MapWalker(self._points_map, self.get_next_point(next_move))
+            for point in next_move if self.get_next_point(point) is not None
+        ]
 
         """ if returned more than one direction we need to start new two walkers"""
         return [
@@ -123,18 +128,34 @@ class MapWalker:
 
            While wall stop executing
         """
+        map = self._points_map
+
         try:
             match direction:
                 case Direction.RIGHT:
-                    return self._points_map[self._cursor.y][self._cursor.x + 1]
+
+                    if x := self._cursor.x + 1 > len(self._points_map):
+                        return None
+
+                    return map[self._cursor.y][self._cursor.x + 1]
                 case Direction.LEFT:
-                    return self._points_map[self._cursor.y][self._cursor.x - 1]
+
+                    if x := self._cursor.x - 1 < 0:
+                        return None
+
+                    return map[self._cursor.y][x]
                 case Direction.UP:
-                    return self._points_map[self._cursor.y + 1][self._cursor.x]
+
+                    if y := self._cursor.y - 1 < 0:
+                        return None
+
+                    return map[y][self._cursor.x]
                 case Direction.DOWN:
-                    return self._points_map[self._cursor.y - 1][self._cursor.x]
+
+                    if y := self._cursor.y + 1 > len(self._points_map):
+                        return None
+
+                    return map[y][self._cursor.x]
         except IndexError:
             print(f"Out of map for coords move {direction} and coords {self._cursor}")
             return None
-
-
