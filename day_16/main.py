@@ -102,17 +102,12 @@ class MapWalker:
             next_point = self.get_next_point(self._move)
 
             if next_point is None:
-                return MapWalker
+                return self._visited
 
             self._cursor = next_point
 
             self._visited.add(self._cursor)
             return self.next()  # recursion
-
-        mapped = [
-            MapWalker(self._points_map, self.get_next_point(next_move))
-            for point in next_move if self.get_next_point(point) is not None
-        ]
 
         """ if returned more than one direction we need to start new two walkers"""
         return [
@@ -134,28 +129,28 @@ class MapWalker:
             match direction:
                 case Direction.RIGHT:
 
-                    if x := self._cursor.x + 1 > len(self._points_map):
+                    if self._cursor.x + 1 > len(self._points_map[self._cursor.y]):
                         return None
 
                     return map[self._cursor.y][self._cursor.x + 1]
                 case Direction.LEFT:
 
-                    if x := self._cursor.x - 1 < 0:
+                    if self._cursor.x - 1 < 0:
                         return None
 
-                    return map[self._cursor.y][x]
+                    return map[self._cursor.y][self._cursor.x - 1]
                 case Direction.UP:
 
-                    if y := self._cursor.y - 1 < 0:
+                    if self._cursor.y - 1 < 0:
                         return None
 
-                    return map[y][self._cursor.x]
+                    return map[self._cursor.y - 1][self._cursor.x]
                 case Direction.DOWN:
 
-                    if y := self._cursor.y + 1 > len(self._points_map):
+                    if self._cursor.y + 1 > len(self._points_map):
                         return None
 
-                    return map[y][self._cursor.x]
+                    return map[self._cursor.y + 1][self._cursor.x]
         except IndexError:
             print(f"Out of map for coords move {direction} and coords {self._cursor}")
             return None
