@@ -45,6 +45,22 @@ class TestLoadData(unittest.TestCase):
 
         assert walker.get_next_point(Direction.UP) is None
 
+    def test_return_next_element_left_till_edge_of_map(self):
+        input_one_row_map = normalize_data([['.']])
+        walker = MapWalker(input_one_row_map, Dot(0, 0, '.'), Direction.LEFT)
+
+        walker.next()
+
+        assert walker.get_next_point(Direction.LEFT) is None
+
+    def test_return_next_element_down_till_edge_of_map(self):
+        input_one_row_map = normalize_data([['.']])
+        walker = MapWalker(input_one_row_map, Dot(0, 0, '.'), Direction.DOWN)
+
+        walker.next()
+
+        assert walker.get_next_point(Direction.DOWN) is None
+
     def test_store_three_points_moving_right(self):
         input_one_row_map = normalize_data([['.', '.', '.']])
         walker = MapWalker(input_one_row_map, Dot(0, 0, '.'))
